@@ -1,0 +1,13 @@
+{
+    "extends": "standard",
+    "plugins": [
+        "standard",
+        "promise"
+    ],
+    "rules": {
+      "complexity": ["error", { "max": 5 }],
+      "max-depth": ["error", { "max": 1 }],
+      "no-new": [0],
+      "handle-callback-err": "warn" 
+    }
+}
