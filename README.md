@@ -24,7 +24,7 @@ const papyrus = require('papyrus')
 
 const papyrusConfig = {
   service: 'api',
-  vendor: log4js, // it's possible to use a winston instance
+  vendorLogger: log4js, // it's possible to use a winston instance
   sensitive: {
     password: {
       paths: ['message.password'],
@@ -32,7 +32,7 @@ const papyrusConfig = {
       replacer: '*'
     }
   },
-  middleware: {
+  loggersMiddleware: {
     http: {
       propsToLog: {
         request: ['id', 'method', 'url', 'body', 'httpVersion', 'referrer', 'user-agent'],
