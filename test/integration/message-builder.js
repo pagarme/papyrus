@@ -17,7 +17,7 @@ test.before(() => {
   messageBuilder = createMessageBuilder(createMessageMasker(sensitive), 'test')
 })
 
-test('messageBuilder: create message with a message.password property masked from a valid JSON object', t => {
+test('messageBuilder: create a message with a masked message.password property', t => {
   const object = {
     message: { 
       password: 'Papyrus'
