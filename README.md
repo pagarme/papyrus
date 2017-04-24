@@ -1,4 +1,4 @@
-# Papyrus - Logging with steroids
+# Escriba - Logging with steroids
 
 The motivations for this library is to provide ways for a better express application logging. To achieve this goal we provide tools to managing logs, a log tracker across services and we add relevant information to your log.
 
@@ -7,19 +7,19 @@ The motivations for this library is to provide ways for a better express applica
 - Your logs will have a unique id.
 - Request and responses will have the same id. You can pass this id to another service, making possible to track the path of a request across your services.
 - It's possible to hide secret information based on regex.
-- Papyrus use JSON format and adds extra information to your logs as pid, hostname, level, startTime, latency.
-- You can tell to Papyrus to log only some props from a request or response.
+- Escriba use JSON format and adds extra information to your logs as pid, hostname, level, startTime, latency.
+- You can tell to Escriba to log only some props from a request or response.
 - If you have some routes that aren't important you can add rules to skip this routes. Also it's possible to skip a route based on methods or just skip body property from a route.
 
 # Installation
 
 ```sh
-npm install --save papyrus
+npm install --save escriba
 ```
 
 # Usage
 
-Papyrus provides two kinds of logger: logger and httpLogger.
+Escriba provides two kinds of logger: logger and httpLogger.
 
 ## Logger
 
@@ -27,10 +27,10 @@ Use logger if you want to add some additional log across your application. For e
 
 ```js
 const log4js = require('log4js').getLogger()
-const papyrus = require('papyrus')
+const escriba = require('escriba')
 const cuid = require('cuid')
 
-const { logger } = papyrus({ 
+const { logger } = escriba({ 
   vendorLogger: log4js, 
   service: 'api',
   sensitive: {
@@ -55,10 +55,10 @@ It's important to hide sentive information like api_key.
 
 ```js
 const log4js = require('log4js').getLogger()
-const papyrus = require('papyrus')
+const escriba = require('escriba')
 const cuid = require('cuid')
 
-const { logger } = papyrus({ 
+const { logger } = escriba({ 
   vendorLogger: log4js, 
   sensitive: {
     password: {
