@@ -1,5 +1,5 @@
 const R = require('ramda')
-const { parseStringToJSON, pickProperties, generateLogLevel, stringify } = require('../utils')
+const { parseStringToJSON, pickProperties, generateLogLevel, stringify } = require('./utils')
 
 const shouldSkipBody = (bannedBodyRoutes, url) => (
   R.contains(true, bannedBodyRoutes.map(regex => R.test(regex, url)))
