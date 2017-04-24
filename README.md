@@ -1,80 +1,84 @@
 # Papyrus - Logging with steroids
 
-Papyrus provides a set of facilities for log information. 
+The motivations for this library is to provide ways for a better express application logging. To achieve this goal we provide tools to managing logs, a log tracker across services and we add relevant information to your log.
 
-# Why use Papyrus
+# Cool features
 
-- Attach an unique id for your logs, req and res will have the same id. Tip: use the same id across microservices.
-- Hide secret information.
-- Add extra information to your logs as pid, hostname, level, startTime, latency.
-- Pick information from request and response.
-- Add skip rules to bane routes, bodies and methods.
+- Your logs will have a unique id.
+- Request and responses will have the same id. You can pass this id to another service, making possible to track the path of a request across your services.
+- It's possible to hide secret information based on regex.
+- Papyrus use JSON format and adds extra information to your logs as pid, hostname, level, startTime, latency.
+- You can tell to Papyrus to log only some props from a request or response.
+- If you have some routes that aren't important you can add rules to skip this routes. Also it's possible to skip a route based on methods or just skip body property from a route.
 
-## Installation
+# Installation
 
 ```sh
 npm install --save papyrus
 ```
 
-## Usage
+# Usage
+
+Papyrus provides two kinds of logger: logger and httpLogger.
+
+## Logger
+
+Use logger if you want to add some additional log across your application. For example, to log information from an userController hidding the password property:
 
 ```js
 const log4js = require('log4js').getLogger()
 const papyrus = require('papyrus')
+const cuid = require('cuid')
 
-const papyrusConfig = {
+const { logger } = papyrus({ 
+  vendorLogger: log4js, 
   service: 'api',
-  vendorLogger: log4js, // it's possible to use a winston instance
   sensitive: {
     password: {
-      paths: ['message.password'],
+      paths: ['password'],
       pattern: /\w.*/g,
       replacer: '*'
     }
+  }
+})
+
+logger.info({ text: 'Setting user permission', password: 'abc' }, { id: cuid(), from: 'userController' })
+```
+
+## Http logger
+
+To log http request and response use the httpLogger. For this example we'll long only some properties: id, body and statusCode. 
+
+Also we'll skip status route, options method and body property from routes that ends with .csv or .xlsx.
+
+It's important to hide sentive information like api_key. 
+
+```js
+const log4js = require('log4js').getLogger()
+const papyrus = require('papyrus')
+const cuid = require('cuid')
+
+const { logger } = papyrus({ 
+  vendorLogger: log4js, 
+  sensitive: {
+    password: {
+      paths: ['body.api_key'],
+      pattern: /(ak_test|ak_live).*/g,
+      replacer: '*'
+    }
   },
-  loggersMiddleware: {
-    http: {
-      propsToLog: {
-        request: ['id', 'method', 'url', 'body', 'httpVersion', 'referrer', 'user-agent'],
-        response: ['id', 'method', 'url', 'statusCode', 'body', 'httpVersion', 'referrer', 'user-agent', 'latency']
-      },
-      skipRules: {
-        bannedRoutes: [/\/status.*/],
-        bannedMethods: ['OPTIONS'],
-        bannedBodyRoutes: [/\/status.*/, /.*\.(csv|xlsx)$/]  
-      }
+  httpConf: {
+    propsToLog: {
+      request: ['id', 'url', 'body'],
+      response: ['id', 'url', 'body', 'statusCode', 'latency']
+    },
+    skipRules: {
+      bannedRoutes: [/\/status.*/],
+      bannedMethods: ['OPTIONS'],
+      bannedBodyRoutes: [/.*\.(csv|xlsx)$/]  
     }
   }
-}
-
-const { logger, middlewareLogger } = Papyrus(papyrusConfig)
-
-logger.info({ text: 'password must be hidden', password: 'papyrus' }, { from: 'first log' })
-```
-
-The second parameter(from) is optional. With this configuration your log message will be something like:
-
-```js
-{
-  id: 'cj13tgoeg0000l3set0x9drgk',
-  message: {
-    text: 'password must be hidden',
-    password: '*'
-  },
-  from: 'first log',
-  startTime: 1491837862420,
-  service: 'api',
-  level: 'info',
-  pid: 39127,
-  hostname: 'Papyrus-MacBook-Air.local'
-}
-
-```
-
-As you can see we set a middleware property in papyrusConf, this information will be used on Express middleware:
-
-```js
-app.use(middlewareLogger.http)
+})
 ```
 
 Every request and response will be logged, and the most cool part: both will have the same id. This is important because you can search for this id and get all information about your request and response.
