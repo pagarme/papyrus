@@ -1,4 +1,8 @@
-# Escriba - Logging with steroids
+![Escriba Logo](https://image.ibb.co/jHdFD5/escriba.png)
+
+> Logging with steroids
+
+# Escriba
 
 The motivations for this library is to provide ways for a better express application logging. To achieve this goal we provide tools to managing logs, a log tracker across services and we add relevant information to your log.
 
