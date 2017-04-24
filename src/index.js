@@ -13,7 +13,7 @@ const scribe = (config) => {
   const messageMasker = createMessageMasker(sensitive)
   const messageBuilder = createMessageBuilder(messageMasker, service)
   const logger = createLogger(vendorLogger, messageBuilder)
-  const httpLogger = createHttpLogger(vendorLogger, messageBuilder, httpConf)
+  const httpLogger = createHttpLogger(vendorLogger, messageBuilder, httpConf || {})
   return { logger, httpLogger }
 }
 
