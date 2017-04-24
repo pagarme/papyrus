@@ -1,5 +1,5 @@
 const R = require('ramda')
-const { pickProperties, stringify } = require('../utils')
+const { pickProperties, stringify } = require('./utils')
 
 const buildRequestLog = propsToLog => req => {
   const reqProps = pickProperties(req, propsToLog)
