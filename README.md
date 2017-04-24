@@ -35,7 +35,7 @@ const escriba = require('escriba')
 const cuid = require('cuid')
 
 const { logger } = escriba({ 
-  vendorLogger: log4js, 
+  loggerEngine: log4js, 
   service: 'api',
   sensitive: {
     password: {
@@ -58,12 +58,16 @@ Also we'll skip status route, options method and body property from routes that 
 It's important to hide sentive information like api_key. 
 
 ```js
+const express = require('express')
 const log4js = require('log4js').getLogger()
 const escriba = require('escriba')
 const cuid = require('cuid')
+const roomController = require('./controllers/room')
 
-const { logger } = escriba({ 
-  vendorLogger: log4js, 
+const app = express()
+
+const { httpLogger } = escriba({ 
+  loggerEngine: log4js, 
   sensitive: {
     password: {
       paths: ['body.api_key'],
@@ -83,6 +87,12 @@ const { logger } = escriba({
     }
   }
 })
+
+app.use(httpLogger)
+
+app.get('/room/:id', roomController.index)
+app.post('/room', roomController.save)
+
 ```
 
 Every request and response will be logged, and the most cool part: both will have the same id. This is important because you can search for this id and get all information about your request and response.
@@ -91,4 +101,11 @@ This id is injected in req object, then if you need to log some extra informatio
 
 ```js
 logger.info('some controller information', { id: req.id })
+```
+
+## License
+
+```
+The MIT License (MIT)
+Copyright (c) 2017 Pagar.me Pagamentos S/A
 ```
