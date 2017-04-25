@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/pagarme/escriba/badge.svg?branch=feature%2Fadd-coverage)](https://coveralls.io/github/pagarme/escriba?branch=feature%2Fadd-coverage)
+
 ![Escriba Logo](https://image.ibb.co/jHdFD5/escriba.png)
 
 > Logging with steroids
