@@ -12,10 +12,19 @@ const stringify = msg => {
 }
 
 const pickProperties = (message, propsToLog) => {
-  const isNull = prop => R.isNil(message[prop])
-  const pick = prop => R.pick([prop], message)
-  const propsToLogMap = R.map(R.ifElse(isNull, R.always({}), pick))
-  return R.pipe(propsToLogMap, R.mergeAll)(propsToLog)
+  const dotSplit = R.split('.')
+  const isNull = prop => R.isNil(R.path(R.split('.', prop), message))
+
+  const pickProp = prop => ({ path: dotSplit(prop), value: R.path(dotSplit(prop), message) })
+  const buildProps = R.map(R.ifElse(isNull, R.always({}), pickProp))
+  const mergePickedProps = pickedProps => R.reduce(addPickedProp, {}, pickedProps)
+
+  const addPickedProp = (merged, { path, value }) => {
+    if (!path) return merged
+    return R.set(R.lensPath(path), value, merged)
+  }
+
+  return R.pipe(buildProps, mergePickedProps)(propsToLog)
 }
 
 const generateLogLevel = statusCode => {
