@@ -1,7 +1,8 @@
 const R = require('ramda')
 const { test } = require('ava')
+const ironMask = require('iron-mask')
+
 const { createMessageBuilder } = require('../../src/message-builder')
-const { createMessageMasker } = require('../../src/message-masker')
 
 let messageBuilder = {}
 
@@ -14,7 +15,7 @@ test.before(() => {
     }
   }
   
-  messageBuilder = createMessageBuilder(createMessageMasker(sensitive), 'test')
+  messageBuilder = createMessageBuilder(ironMask.create(sensitive), 'test')
 })
 
 test('messageBuilder: create a message with a masked message.password property', t => {
