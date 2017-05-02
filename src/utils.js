@@ -1,4 +1,5 @@
 const R = require('ramda')
+const pokeprop = require('pokeprop')
 
 const parseStringToJSON = chunk => (
   Promise.resolve(chunk)
@@ -11,21 +12,9 @@ const stringify = msg => {
   return JSON.stringify(msg)
 }
 
-const pickProperties = (message, propsToLog) => {
-  const dotSplit = R.split('.')
-  const isNull = prop => R.isNil(R.path(R.split('.', prop), message))
-
-  const pickProp = prop => ({ path: dotSplit(prop), value: R.path(dotSplit(prop), message) })
-  const buildProps = R.map(R.ifElse(isNull, R.always({}), pickProp))
-  const mergePickedProps = pickedProps => R.reduce(addPickedProp, {}, pickedProps)
-
-  const addPickedProp = (merged, { path, value }) => {
-    if (!path) return merged
-    return R.set(R.lensPath(path), value, merged)
-  }
-
-  return R.pipe(buildProps, mergePickedProps)(propsToLog)
-}
+const pickProperties = (message, propsToLog) => (
+  pokeprop(propsToLog, message)
+)
 
 const generateLogLevel = statusCode => {
   if (statusCode < 400 || R.isNil(statusCode)) return 'info'
