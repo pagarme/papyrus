@@ -4,7 +4,7 @@ const winston = require('winston')
 const { test } = require('ava')
 const utils = require('../../src/utils')
 
-test('parseStringToJSON: with a valid JSON string', t => ( 
+test('parseStringToJSON: with a valid JSON string', t => (
   utils.parseStringToJSON(JSON.stringify({ name: 'Papyrus' }))
     .then(result => t.deepEqual(result, { name: 'Papyrus' }))
 ))
@@ -20,6 +20,19 @@ test('stringify: with a valid JSON object', t => {
 
 test('stringify: with a invalid JSON object', t => {
   t.is(utils.stringify('Papyrus'), 'Papyrus')
+})
+
+test('stringify: with a valid error object', t => {
+  const logStringified = utils.stringify({
+    id: 1, 
+    message: new Error('Error Message')
+  }) 
+  
+  const logObject = JSON.parse(logStringified)
+  const logError = logObject.message
+  
+  t.is(logError.message, 'Error Message')
+  t.true(logError.stack.includes('Error: Error Message'))
 })
 
 test('generateLogLevel: with status code 400', t => {
