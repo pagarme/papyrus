@@ -1,0 +1,18 @@
+---
+# https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html
+- name: Improve kernel mmap count
+  sysctl:
+    name: vm.max_map_count
+    value: 262144
+    state: present
+
+# https://github.com/moby/moby/issues/4250
+- name: Fix docker no swap limit support
+  lineinfile:
+    path: /etc/default/grub
+    state: present
+    regexp: '^GRUB_CMDLINE_LINUX='
+    line: 'GRUB_CMDLINE_LINUX="cgroup_enable=memory swapaccount=1"'
+
+- name: Update grub
+  command: update-grub

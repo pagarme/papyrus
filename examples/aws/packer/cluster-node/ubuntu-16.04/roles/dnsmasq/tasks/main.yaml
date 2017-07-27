@@ -1,0 +1,17 @@
+---
+- name: Install dnsmasq
+  apt:
+    name: dnsmasq
+    update_cache: yes
+    state: latest
+
+- name: Add consul as dnsmasq upstream
+  copy:
+    src: "{{ item }}"
+    dest: "/etc/dnsmasq.d/{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - 10-consul
+    - 11-docker

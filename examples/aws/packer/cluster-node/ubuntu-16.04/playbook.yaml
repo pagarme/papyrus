@@ -1,0 +1,10 @@
+---
+- hosts: localhost
+  become: yes
+  roles:
+    - tunning
+    - dnsmasq
+    - metadata
+    - consul
+    - docker
+    - nomad
