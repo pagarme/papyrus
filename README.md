@@ -94,7 +94,6 @@ app.use(httpLogger)
 
 app.get('/room/:id', roomController.index)
 app.post('/room', roomController.save)
-
 ```
 
 Every request and response will be logged, and the most cool part: both will have the same id. This is important because you can search for this id and get all information about your request and response.
@@ -103,6 +102,32 @@ This id is injected in req object, then if you need to log some extra informatio
 
 ```js
 logger.info('some controller information', { id: req.id })
+```
+
+## Examples
+
+The log-generator inside examples folder will run a nodejs application that will make request for itself every milliseconds decided by the user. The application will get the milleseconds value from an environment variable called `ESCRIBA_TIMEOUT`(3000 is the default value).
+
+To use log-generator through Docker use this commands inside the log-generator folder:
+
+```
+docker build -t pagarme/log-generator:latest .
+
+docker run -e ESCRIBA_TIMEOUT=3000 -p 3000:3000 -d pagarme/log-generator:latest
+```
+
+And to make some manual requests use:
+
+```
+curl -H "Content-Type: application/json" -X GET http://localhost:3000/escriba
+
+curl -H "Content-Type: application/json" -X POST -d '{"username":"a name"}' http://localhost:3000/escriba
+```
+
+The log-generator example will get escriba library from npm, if you want to get the library directly from the repository run docker with -v option:
+
+```
+docker run -e ESCRIBA_TIMEOUT=3000 -p 3000:3000 -d -v $(cd ../../ && pwd):/escriba pagarme/log-generator:latest
 ```
 
 ## License
