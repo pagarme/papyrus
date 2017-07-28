@@ -7,14 +7,15 @@ const parseStringToJSON = chunk => (
     .catch(err => chunk)
 )
 
-const stringify = msg => {
-  if (R.is(String, msg)) return msg
-  return JSON.stringify(msg)
+const buildErrorObject = R.pick(['message', 'stack'])
+
+const stringify = log => {
+  if (R.is(String, log)) return log
+  if (R.is(Error, log.message)) log.message = buildErrorObject(log.message)
+  return JSON.stringify(log)
 }
 
-const pickProperties = (message, propsToLog) => (
-  pokeprop(propsToLog, message)
-)
+const pickProperties = R.flip(pokeprop)
 
 const generateLogLevel = statusCode => {
   if (statusCode < 400 || R.isNil(statusCode)) return 'info'
