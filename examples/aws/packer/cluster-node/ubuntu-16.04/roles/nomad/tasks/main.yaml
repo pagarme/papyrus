@@ -1,0 +1,46 @@
+---
+- name: Install dependences
+  apt:
+    name: unzip
+    update_cache: yes
+    state: latest
+
+- name: Download nomad
+  get_url:
+    url: https://releases.hashicorp.com/nomad/0.6.0/nomad_0.6.0_linux_amd64.zip
+    dest: /tmp/
+    checksum: "sha256:fcf108046164cfeda84eab1c3047e36ad59d239b66e6b2f013e6c93064bc6313"
+
+- name: Unarchive nomad
+  unarchive:
+    src: /tmp/nomad_0.6.0_linux_amd64.zip
+    dest: /usr/local/bin
+
+- name: Create nomad system group
+  group:
+    name: nomad
+    state: present
+    system: yes
+
+- name: Create nomad system user
+  user:
+    name: nomad
+    comment: "Nomad user"
+    group: nomad
+    shell: "/bin/false"
+    system: yes
+    home: /var/local/nomad
+
+- name: Copy nomad systemd unit
+  copy:
+    src: nomad.service
+    dest: /etc/systemd/system
+    owner: root
+    group: root
+    mode: 0644
+
+- name: Add user nomad to docker group
+  user:
+    append: yes
+    name: nomad
+    groups: docker

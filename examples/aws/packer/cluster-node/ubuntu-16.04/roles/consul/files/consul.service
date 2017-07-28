@@ -1,0 +1,30 @@
+[Unit]
+Description=Consul Agent
+Requires=network-online.target cloud-init.target
+After=network-online.target cloud-init.target
+
+[Service]
+User=consul
+Group=consul
+Restart=on-failure
+RestartSec=10
+Environment=GOMAXPROCS=2
+EnvironmentFile=/run/nosce/metadata
+EnvironmentFile=/run/nosce/consul
+ExecStart=/usr/local/bin/consul agent \
+	$CONSUL_OPTIONS \
+	-datacenter=${EC2_AZ} \
+	-retry-join-ec2-tag-key=${CONSUL_EC2_KEY} \
+	-retry-join-ec2-tag-value=${CONSUL_EC2_VALUE} \
+	-retry-join-ec2-region=${EC2_REGION} \
+	-advertise=${EC2_LOCAL_IPV4} \
+	-data-dir=/var/local/consul \
+	-log-level=info \
+	-client=127.0.0.1 \
+	-protocol=3
+ExecReload=/bin/kill -s HUP $MAINPID
+KillSignal=SIGINT
+TimeoutStopSec=5
+
+[Install]
+WantedBy=multi-user.target

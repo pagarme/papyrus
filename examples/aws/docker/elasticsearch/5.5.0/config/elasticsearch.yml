@@ -1,0 +1,14 @@
+---
+cluster.name: ${ES_CLUSTER_NAME}
+network.host: 0.0.0.0
+network.publish_host: ${ES_NETWORK_PUBLISH_HOST}
+discovery.type: zen
+discovery.zen.ping.unicast.hosts: ${ES_DISCOVERY_ZEN_PING_UNICAST_HOST}
+discovery.zen.minimum_master_nodes: ${ES_DISCOVERY_ZEN_MINIMUM_MASTER_NODES}
+
+# disable xpack
+xpack.security.enabled: false
+xpack.monitoring.enabled: false
+xpack.ml.enabled: false
+xpack.graph.enabled: false
+xpack.watcher.enabled: false

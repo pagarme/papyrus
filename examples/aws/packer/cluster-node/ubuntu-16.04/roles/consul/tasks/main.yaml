@@ -1,0 +1,40 @@
+---
+- name: Install dependences
+  apt:
+    name: unzip
+    update_cache: yes
+    state: latest
+
+- name: Download consul
+  get_url:
+    url: https://releases.hashicorp.com/consul/0.9.0/consul_0.9.0_linux_amd64.zip
+    dest: /tmp/
+    checksum: "sha256:33e54c7d9a93a8ce90fc87f74c7f787068b7a62092b7c55a945eea9939e8577f"
+
+- name: Unarchive consul
+  unarchive:
+    src: /tmp/consul_0.9.0_linux_amd64.zip
+    dest: /usr/local/bin
+
+- name: Create consul system group
+  group:
+    name: consul
+    state: present
+    system: yes
+
+- name: Create consul system user
+  user:
+    name: consul
+    comment: "Consul user"
+    group: consul
+    shell: "/bin/false"
+    system: yes
+    home: /var/local/consul
+
+- name: Copy consul systemd unit
+  copy:
+    src: consul.service
+    dest: /etc/systemd/system
+    owner: root
+    group: root
+    mode: 0644

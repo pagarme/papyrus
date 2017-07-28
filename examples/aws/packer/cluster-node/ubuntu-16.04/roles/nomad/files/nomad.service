@@ -1,0 +1,23 @@
+[Unit]
+Description=Nomad Agent
+Requires=network-online.target cloud-init.target consul.service
+After=network-online.target cloud-init.target consul.service
+
+[Service]
+User=nomad
+Group=nomad
+Restart=on-failure
+RestartSec=10
+EnvironmentFile=/run/nosce/metadata
+EnvironmentFile=/run/nosce/nomad
+ExecStart=/usr/local/bin/nomad agent \
+	$NOMAD_OPTIONS \
+	-bind=0.0.0.0 \
+	-region=${EC2_REGION} \
+	-dc=${EC2_AZ} \
+	-data-dir=/var/local/nomad
+ExecReload=/bin/kill -s HUP $MAINPID
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target

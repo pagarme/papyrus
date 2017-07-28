@@ -1,0 +1,56 @@
+{
+  "variables": {
+    "region": "us-east-1",
+    "profile": "default",
+    "instance_type": "t2.medium",
+    "ansible_playbook_file": "playbook.yaml"
+  },
+
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "profile": "{{ user `profile` }}",
+      "region": "{{ user `region` }}",
+      "instance_type": "{{ user `instance_type` }}",
+      "source_ami_filter": {
+        "filters": {
+          "virtualization-type": "hvm",
+          "name": "*ubuntu-xenial-16.04-amd64-server-*",
+          "root-device-type": "ebs"
+        },
+        "owners": ["099720109477"],
+        "most_recent": true
+      },
+      "ssh_username": "ubuntu",
+      "ami_name": "ubuntu-16.04-cluster-{{isotime \"20060102.150405\"}}",
+      "tags": {
+        "Name": "ubuntu-16.04-cluster"
+      }
+    }
+  ],
+
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline_shebang": "/bin/bash -xeu",
+      "inline": [
+        "export DEBIAN_FRONTEND=noninteractive",
+        "sudo -E apt-get -q update",
+        "sudo -E apt-get -q -y upgrade",
+        "sudo -E apt-get -q -y dist-upgrade",
+        "sudo -E apt-get -q -y install python3-pip python",
+        "sudo pip3 -q install --upgrade pip",
+        "sudo pip3 -q install ansible"
+      ]
+    },{
+      "type": "ansible-local",
+      "playbook_file": "{{ user `ansible_playbook_file` }}",
+      "playbook_dir": "."
+    },{
+      "type": "shell",
+      "inline": [
+        "rm -rf /home/ubuntu/.ssh/authorized_keys"
+      ]
+    }
+  ]
+}
