@@ -6,7 +6,7 @@ const log4jsConfig = {
     type: 'console',
     layout: {
       type: 'pattern',
-      pattern: '%[%m%]%n'
+      pattern: '%m'
     }
   }]
 }
