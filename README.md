@@ -16,7 +16,7 @@ The motivations for this library is to provide ways for a better express applica
 - Hide secret information based on regex
 - Adds extra information to your logs as `pid`, `hostname`, `level`, `startTime`, and `latency`
 - Filter props from request and/or response
-- Skip this routes based on methods/rules/body props
+- Skip routes based on methods/rules/body props
 
 # Installation
 
@@ -60,7 +60,7 @@ Use `httpLogger` to log an http request and response.
 
 For this example we'll long only some properties: `id`, `body` and `statusCode`. 
 
-We'll also skip status route, options method and body property from routes that ends with .csv or .xlsx.
+We'll also skip status route, options method and body property from routes that end with .csv or .xlsx.
 
 It's important to hide sentive information like api_key. 
 
@@ -111,9 +111,9 @@ logger.info('some controller information', { id: req.id })
 
 ## Examples
 
-The `log-generator` inside `examples` folder will run a Node.js application that will make a request for itself every in an interval defined by the user (in milliseconds). The application will get input value from an environment variable `ESCRIBA_TIMEOUT`(3000 is the default value, this represents 3 seconds)
+The `log-generator` inside `examples` folder will run a Node.js application that will make a request for itself every in an interval defined by the user (in milliseconds). The application will get input values from an environment variable `ESCRIBA_TIMEOUT`(3000 is the default value, this represents 3 seconds)
 
-To use `log-generator` through Docker use this commands inside the `log-generator` folder:
+To use `log-generator` through Docker use these commands inside the `log-generator` folder:
 
 ```
 docker build -t pagarme/log-generator:latest .
