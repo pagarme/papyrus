@@ -87,6 +87,7 @@ const { httpLogger } = escriba({
       request: ['id', 'url', 'body'],
       response: ['id', 'url', 'body', 'statusCode', 'latency']
     },
+    envToLog: ['SHELL', 'PATH'],
     skipRules: {
       bannedRoutes: [/\/status.*/],
       bannedMethods: ['OPTIONS'],

@@ -3,8 +3,17 @@ const { pickProperties, stringify } = require('./utils')
 
 const buildRequestLog = propsToLog => req => {
   const reqProps = pickProperties(req, propsToLog)
+  const env = pickProperties(process.env, propsToLog)
   const headerProps = pickProperties(req.headers, propsToLog)
-  return R.mergeAll([reqProps, headerProps, { level: 'info', from: 'request' }])
+  return R.mergeAll([
+    reqProps,
+    headerProps,
+    {
+      level: 'info',
+      from: 'request',
+      env
+    }
+  ])
 }
 
 const requestLogger = (logger, messageBuilder, propsToLog) => (req) => {

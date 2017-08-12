@@ -8,9 +8,24 @@ const shouldSkipBody = (bannedBodyRoutes, url) => (
 const buildResLog = ({bannedBodyRoutes, propsToLog}) => ({ req, res }) => {
   const level = generateLogLevel(res.statusCode)
   if (shouldSkipBody(bannedBodyRoutes, req.url)) res.body = {}
-  const reqProps = R.merge(pickProperties(req, propsToLog), pickProperties(req.headers, propsToLog))
+
+  const reqProps = R.merge(
+    pickProperties(req, propsToLog),
+    pickProperties(req.headers, propsToLog)
+  )
+
+  const env = pickProperties(process.env, propsToLog)
+
   const resProps = pickProperties(res, propsToLog)
-  return R.mergeAll([reqProps, resProps, { level, from: 'response' }])
+  return R.mergeAll([
+    reqProps,
+    resProps,
+    {
+      level,
+      from: 'response',
+      env
+    }
+  ])
 }
 
 const loggerByStatusCode = logger => message => {
