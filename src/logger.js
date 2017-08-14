@@ -2,11 +2,10 @@ const R = require('ramda')
 const cuid = require('cuid')
 const { stringify } = require('./utils')
 
-const buildLog = messageBuilder => (message, level, additional) => {
+const buildLog = messageBuilder => (body, level, additional) => {
   const defaultAdditional = R.defaultTo({}, additional)
   const { id, from } = defaultAdditional
-  const log = messageBuilder({ id: R.defaultTo(cuid(), id), message, level, from })
-  return log
+  return messageBuilder({ id: R.defaultTo(cuid(), id), body, level, from })
 }
 
 const createProxyLevels = (buildLog, logger) => {
