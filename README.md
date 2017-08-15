@@ -119,7 +119,8 @@ To use `log-generator` through Docker use these commands inside the `log-generat
 ```
 docker build -t pagarme/log-generator:latest .
 
-docker run -e ESCRIBA_TIMEOUT=3000 -p 3000:3000 -d pagarme/log-generator:latest
+docker run -e ESCRIBA_TIMEOUT=3000 -p 3000:3000 -d -v $(cd ../../ && pwd):/log-generator/node_modules/escriba pagarme/log-generator:latest
+
 ```
 
 And to make some manual requests use:
