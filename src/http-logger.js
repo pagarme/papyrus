@@ -3,9 +3,10 @@ const cuid = require('cuid')
 const { createResponseLogger } = require('./response-logger')
 const { createRequestLogger } = require('./request-logger')
 
-const setDefaultProps = ({ propsToLog, skipRules }) => {
+const prepareConfigProps = ({ envToLog, propsToLog, skipRules }) => {
   const defaultPropsToLog = R.defaultTo({}, propsToLog)
   const defaultSkipRules = R.defaultTo({}, skipRules)
+  const defaultEnvToLog = R.defaultTo([], envToLog)
 
   const skipRulesDefault = {
     bannedRoutes: R.defaultTo([], defaultSkipRules.bannedRoutes),
@@ -14,8 +15,14 @@ const setDefaultProps = ({ propsToLog, skipRules }) => {
   }
 
   const propsToLogConfig = {
-    request: R.defaultTo(['id', 'body'], defaultPropsToLog.request),
-    response: R.defaultTo(['id', 'body', 'statusCode'], defaultPropsToLog.response)
+    request: R.concat(
+      R.defaultTo(['id', 'body'], defaultPropsToLog.request),
+      defaultEnvToLog
+    ),
+    response: R.concat(
+      R.defaultTo(['id', 'body', 'statusCode'], defaultPropsToLog.response),
+      defaultEnvToLog
+    )
   }
 
   return { propsToLog: propsToLogConfig, skipRules: skipRulesDefault }
@@ -37,7 +44,7 @@ const middleware = (requestLogger, responseLogger, skipRules) => (req, res, next
 }
 
 const httpLogger = (logger, messageBuilder, config) => {
-  const { propsToLog, skipRules } = setDefaultProps(config)
+  const { propsToLog, skipRules } = prepareConfigProps(config)
   const { bannedBodyRoutes } = skipRules
   const { request, response } = propsToLog
   const reqLogger = createRequestLogger(logger, messageBuilder, request)
