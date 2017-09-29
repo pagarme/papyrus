@@ -41,8 +41,8 @@ const cuid = require('cuid')
 
 log4js.level = 'info'
 
-const { logger } = escriba({ 
-  loggerEngine: log4js, 
+const { logger } = escriba({
+  loggerEngine: log4js,
   service: 'api',
   sensitive: {
     password: {
@@ -60,11 +60,11 @@ logger.info({ text: 'Setting user permission', password: 'abc' }, { id: cuid(), 
 
 Use `httpLogger` to log an http request and response.
 
-For this example we'll long only some properties: `id`, `body` and `statusCode`. 
+For this example we'll long only some properties: `id`, `body` and `statusCode`.
 
 We'll also skip status route, options method and body property from routes that end with .csv or .xlsx.
 
-It's important to hide sentive information like api_key. 
+It's important to hide sentive information like api_key.
 
 ```js
 const express = require('express')
@@ -75,8 +75,8 @@ const roomController = require('./controllers/room')
 
 const app = express()
 
-const { httpLogger } = escriba({ 
-  loggerEngine: log4js, 
+const { httpLogger } = escriba({
+  loggerEngine: log4js,
   sensitive: {
     password: {
       paths: ['body.api_key'],
@@ -93,7 +93,7 @@ const { httpLogger } = escriba({
     skipRules: {
       bannedRoutes: [/\/status.*/],
       bannedMethods: ['OPTIONS'],
-      bannedBodyRoutes: [/.*\.(csv|xlsx)$/]  
+      bannedBodyRoutes: [/.*\.(csv|xlsx)$/]
     }
   }
 })
