@@ -3,10 +3,11 @@ const cuid = require('cuid')
 const { createResponseLogger } = require('./response-logger')
 const { createRequestLogger } = require('./request-logger')
 
-const prepareConfigProps = ({ envToLog, propsToLog, skipRules }) => {
+const prepareConfigProps = ({ envToLog, propsToLog, skipRules, logIdPath }) => {
   const defaultPropsToLog = R.defaultTo({}, propsToLog)
   const defaultSkipRules = R.defaultTo({}, skipRules)
   const defaultEnvToLog = R.defaultTo([], envToLog)
+  const defaultLogIdPath = R.defaultTo('', logIdPath)
 
   const skipRulesDefault = {
     bannedRoutes: R.defaultTo([], defaultSkipRules.bannedRoutes),
@@ -25,7 +26,11 @@ const prepareConfigProps = ({ envToLog, propsToLog, skipRules }) => {
     )
   }
 
-  return { propsToLog: propsToLogConfig, skipRules: skipRulesDefault }
+  return {
+    propsToLog: propsToLogConfig,
+    skipRules: skipRulesDefault,
+    logIdPath: defaultLogIdPath
+  }
 }
 
 const shouldSkipLog = (url, method, rules) => {
@@ -35,21 +40,21 @@ const shouldSkipLog = (url, method, rules) => {
   return false
 }
 
-const middleware = (requestLogger, responseLogger, skipRules) => (req, res, next) => {
+const middleware = (requestLogger, responseLogger, skipRules, logIdPath) => (req, res, next) => {
   if (shouldSkipLog(req.url, req.method, skipRules)) return next()
-  req.id = req.id || cuid()
+  req.id = R.path(R.split('.', logIdPath), req) || cuid()
   requestLogger(req)
   responseLogger(req, res)
   next()
 }
 
 const httpLogger = (logger, messageBuilder, config) => {
-  const { propsToLog, skipRules } = prepareConfigProps(config)
+  const { propsToLog, skipRules, logIdPath } = prepareConfigProps(config)
   const { bannedBodyRoutes } = skipRules
   const { request, response } = propsToLog
   const reqLogger = createRequestLogger(logger, messageBuilder, request)
   const resLogger = createResponseLogger(logger, messageBuilder, response, bannedBodyRoutes)
-  return middleware(reqLogger, resLogger, skipRules)
+  return middleware(reqLogger, resLogger, skipRules, logIdPath)
 }
 
 module.exports = { createHttpLogger: httpLogger }
