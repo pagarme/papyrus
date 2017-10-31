@@ -85,6 +85,7 @@ const { httpLogger } = escriba({
     }
   },
   httpConf: {
+    logIdPath: 'headers.my_path_id',
     propsToLog: {
       request: ['id', 'url', 'body'],
       response: ['id', 'url', 'body', 'statusCode', 'latency']
@@ -105,6 +106,8 @@ app.post('/room', roomController.save)
 ```
 
 Every request and response will be logged, and the coolest part: both will have the same id. This is important because you can search for this id and get all information about your request and response.
+
+As you can see we have the logIdPath inside the httpConf object. This property allow you to pick log id from a desired path in request object. If you don't pass this property escriba will generate a new id for your request/response logs using cuid.
 
 This id is injected in the `req` object, so if you need to log some extra information between a request and response just do something like this:
 
