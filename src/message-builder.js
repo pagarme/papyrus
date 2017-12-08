@@ -1,22 +1,29 @@
 const os = require('os')
-const R = require('ramda')
 const moment = require('moment-timezone')
+const {
+  __,
+  assoc,
+  complement,
+  filter,
+  isNil,
+  merge,
+  pipe
+} = require('ramda')
 
-const generateDefaultProps = service => ({
-  service,
+const notNil = complement(isNil)
+
+const defaultProps = {
   startTime: moment().valueOf(),
   hostname: os.hostname(),
   pid: process.pid
-})
+}
 
-const filterMessage = R.filter(prop => !R.isNil(prop))
+const createMessageBuilder = (messageMasker, service) => (message, propsToLog) =>
+  pipe(
+    assoc('service', __, defaultProps),
+    merge(message),
+    messageMasker,
+    filter(notNil)
+  )(service)
 
-const builder = (messageMasker, service) => (message, propsToLog) => (
-  filterMessage(messageMasker(R.merge(message, generateDefaultProps(service))))
-)
-
-const messageBuilder = (messageMasker, service) => (
-  builder(messageMasker, service)
-)
-
-module.exports = { createMessageBuilder: messageBuilder }
+module.exports = { createMessageBuilder }
