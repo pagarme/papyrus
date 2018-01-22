@@ -2,18 +2,13 @@ const R = require('ramda')
 const cuid = require('cuid')
 const { createResponseLogger } = require('./response-logger')
 const { createRequestLogger } = require('./request-logger')
+const { createSkipper } = require('./skipper')
 
 const prepareConfigProps = ({ envToLog, propsToLog, skipRules, logIdPath }) => {
   const defaultPropsToLog = R.defaultTo({}, propsToLog)
-  const defaultSkipRules = R.defaultTo({}, skipRules)
+  const defaultSkipRules = R.defaultTo([], skipRules)
   const defaultEnvToLog = R.defaultTo([], envToLog)
   const defaultLogIdPath = R.defaultTo('', logIdPath)
-
-  const skipRulesDefault = {
-    bannedRoutes: R.defaultTo([], defaultSkipRules.bannedRoutes),
-    bannedMethods: R.defaultTo([], defaultSkipRules.bannedMethods),
-    bannedBodyRoutes: R.defaultTo([], defaultSkipRules.bannedBodyRoutes)
-  }
 
   const propsToLogConfig = {
     request: R.concat(
@@ -28,20 +23,13 @@ const prepareConfigProps = ({ envToLog, propsToLog, skipRules, logIdPath }) => {
 
   return {
     propsToLog: propsToLogConfig,
-    skipRules: skipRulesDefault,
+    skipRules: defaultSkipRules,
     logIdPath: defaultLogIdPath
   }
 }
 
-const shouldSkipLog = (url, method, rules) => {
-  const bannedRoutesResult = R.contains(true, rules.bannedRoutes.map(regex => R.test(regex, url)))
-  const bannedMethodsResult = rules.bannedMethods.includes(method)
-  if (bannedRoutesResult || bannedMethodsResult) return true
-  return false
-}
-
-const middleware = (requestLogger, responseLogger, skipRules, logIdPath) => (req, res, next) => {
-  if (shouldSkipLog(req.url, req.method, skipRules)) return next()
+const middleware = (requestLogger, responseLogger, logIdPath, skipper) => (req, res, next) => {
+  if (skipper(req.url, req.method)) return next()
   req.id = R.path(R.split('.', logIdPath), req) || cuid()
   requestLogger(req)
   responseLogger(req, res)
@@ -50,11 +38,11 @@ const middleware = (requestLogger, responseLogger, skipRules, logIdPath) => (req
 
 const httpLogger = (logger, messageBuilder, config) => {
   const { propsToLog, skipRules, logIdPath } = prepareConfigProps(config)
-  const { bannedBodyRoutes } = skipRules
   const { request, response } = propsToLog
+  const skipper = createSkipper(skipRules)
   const reqLogger = createRequestLogger(logger, messageBuilder, request)
-  const resLogger = createResponseLogger(logger, messageBuilder, response, bannedBodyRoutes)
-  return middleware(reqLogger, resLogger, skipRules, logIdPath)
+  const resLogger = createResponseLogger(logger, messageBuilder, response, skipper)
+  return middleware(reqLogger, resLogger, logIdPath, skipper)
 }
 
 module.exports = { createHttpLogger: httpLogger }
