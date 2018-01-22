@@ -68,7 +68,7 @@ const captureLog = (http, propsToLog, skipper, logger, messageBuilder) => {
 }
 
 const responseLogger = (logger, messageBuilder, propsToLog, skipper) => (req, res) => (
-  captureLog({ req , res }, propsToLog, skipper, logger, messageBuilder)
+  captureLog({ req, res }, propsToLog, skipper, logger, messageBuilder)
 )
 
 module.exports = { createResponseLogger: responseLogger }
