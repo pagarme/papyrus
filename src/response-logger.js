@@ -1,13 +1,9 @@
 const R = require('ramda')
 const { parseStringToJSON, pickProperties, generateLogLevel, stringify } = require('./utils')
 
-const shouldSkipBody = (bannedBodyRoutes, url) => (
-  R.contains(true, bannedBodyRoutes.map(regex => R.test(regex, url)))
-)
-
-const buildResLog = ({bannedBodyRoutes, propsToLog}) => ({ req, res }) => {
+const buildResLog = (skipper, propsToLog) => ({ req, res }) => {
   const level = generateLogLevel(res.statusCode)
-  if (shouldSkipBody(bannedBodyRoutes, req.url)) res.body = {}
+  if (skipper(req.url, req.method, true)) res.body = {}
 
   const reqProps = R.merge(
     pickProperties(req, propsToLog),
@@ -46,7 +42,7 @@ const addLatency = (req, propsToLog) => message => {
   return R.merge(message, { latency: message.startTime - req.startTime })
 }
 
-const captureLog = (http, config, logger, messageBuilder) => {
+const captureLog = (http, propsToLog, skipper, logger, messageBuilder) => {
   const { req, res } = http
   const { write, end } = res
   const chunks = []
@@ -60,9 +56,9 @@ const captureLog = (http, config, logger, messageBuilder) => {
     if (chunk) chunks.push(Buffer.from(chunk))
 
     prepareResLog(req, res, Buffer.concat(chunks))
-      .then(buildResLog(config))
+      .then(buildResLog(skipper, propsToLog))
       .then(messageBuilder)
-      .then(addLatency(req, config.propsToLog))
+      .then(addLatency(req, propsToLog))
       .then(loggerByStatusCode(logger))
 
     end.call(res, chunk)
@@ -71,10 +67,8 @@ const captureLog = (http, config, logger, messageBuilder) => {
   return res
 }
 
-const responseLogger = (logger, messageBuilder, propsToLog, bannedBodyRoutes) => (req, res) => {
-  const config = { propsToLog, bannedBodyRoutes }
-  const http = { req, res }
-  return captureLog(http, config, logger, messageBuilder)
-}
+const responseLogger = (logger, messageBuilder, propsToLog, skipper) => (req, res) => (
+  captureLog({ req , res }, propsToLog, skipper, logger, messageBuilder)
+)
 
 module.exports = { createResponseLogger: responseLogger }
