@@ -91,11 +91,23 @@ const { httpLogger } = escriba({
       response: ['id', 'url', 'body', 'statusCode', 'latency']
     },
     envToLog: ['SHELL', 'PATH'],
-    skipRules: {
-      bannedRoutes: [/\/status.*/],
-      bannedMethods: ['OPTIONS'],
-      bannedBodyRoutes: [/.*\.(csv|xlsx)$/]
-    }
+    skipRules: [
+      {
+        route: /\/status/,
+        method: /.*/,
+        onlyBody: false
+      },
+      {
+        route: /.*\.(csv|xlsx)$/,
+        method: /GET/,
+        onlyBody: true
+      },
+      {
+        route: /.*/,
+        method: /OPTIONS/,
+        onlyBody: false
+      }
+    ]
   }
 })
 
@@ -114,6 +126,8 @@ This id is injected in the `req` object, so if you need to log some extra inform
 ```js
 logger.info('some controller information', { id: req.id })
 ```
+
+Also it's possible to skip logs or only the body property through skipRules, in the example we are skiping logs from route `/status` for `all methods` and skiping the `body` property from routes that ends with `.csv` or `.xlsx`.
 
 ## Examples
 
