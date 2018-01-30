@@ -1,9 +1,8 @@
 const R = require('ramda')
 const { parseStringToJSON, pickProperties, generateLogLevel, stringify } = require('./utils')
 
-const buildResLog = (skipper, propsToLog) => ({ req, res }) => {
+const buildResLog = propsToLog => ({ req, res }) => {
   const level = generateLogLevel(res.statusCode)
-  if (skipper(req.url, req.method, true)) res.body = {}
 
   const reqProps = R.merge(
     pickProperties(req, propsToLog),
@@ -46,17 +45,18 @@ const captureLog = (http, propsToLog, skipper, logger, messageBuilder) => {
   const { req, res } = http
   const { write, end } = res
   const chunks = []
+  const shouldSkipChunk = skipper(req.url, req.method, true)
 
   res.write = chunk => {
-    chunks.push(Buffer.from(chunk))
+    if (!shouldSkipChunk) chunks.push(Buffer.from(chunk))
     write.call(res, chunk)
   }
 
   res.end = chunk => {
-    if (chunk) chunks.push(Buffer.from(chunk))
+    if (chunk && !shouldSkipChunk) chunks.push(Buffer.from(chunk))
 
     prepareResLog(req, res, Buffer.concat(chunks))
-      .then(buildResLog(skipper, propsToLog))
+      .then(buildResLog(propsToLog))
       .then(messageBuilder)
       .then(addLatency(req, propsToLog))
       .then(loggerByStatusCode(logger))
