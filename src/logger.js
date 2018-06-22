@@ -4,8 +4,9 @@ const { stringify } = require('./utils')
 
 const buildLog = messageBuilder => (message, level, additional) => {
   const defaultAdditional = R.defaultTo({}, additional)
-  const { id, from } = defaultAdditional
-  const log = messageBuilder({ id: R.defaultTo(cuid(), id), message, level, from })
+  const log = messageBuilder(Object.assign(
+    { id: cuid(), message, level }, defaultAdditional
+  ))
   return log
 }
 
