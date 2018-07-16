@@ -1,5 +1,6 @@
 const R = require('ramda')
 const pokeprop = require('pokeprop')
+const circularJSON = require('circular-json')
 
 const parseStringToJSON = chunk => (
   Promise.resolve(chunk)
@@ -12,7 +13,7 @@ const buildErrorObject = R.pick(['message', 'stack'])
 const stringify = log => {
   if (R.is(String, log)) return log
   if (R.is(Error, log.message)) log.message = buildErrorObject(log.message)
-  return JSON.stringify(log)
+  return circularJSON.stringify(log)
 }
 
 const pickProperties = R.flip(pokeprop)
