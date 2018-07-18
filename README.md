@@ -129,6 +129,41 @@ logger.info('some controller information', { id: req.id })
 
 Also it's possible to skip logs or only the body property through skipRules, in the example we are skiping logs from route `/status` for `all methods` and skiping the `body` property from routes that ends with `.csv` or `.xlsx`.
 
+## Masks
+
+Just like the `loggerEngine` option, `escriba` accepts two types of mask engines, they are [iron-mask](https://www.npmjs.com/package/iron-mask) and [mask-json](https://www.npmjs.com/package/mask-json). If you don't pass any `maskEngine`, `iron-mask` will be used as default.
+
+### iron-mask
+```javascript
+const { logger, httpLogger } = escriba({
+  loggerEngine,
+  service: 'bla',
+  // no `maskEngine` informed, `iron-mask` will be used
+  sensitive: { // `iron-mask` sensitive format
+    secret: {
+      paths: ['message.secret', 'message.metadata.secret', 'body.secret'],
+      pattern: /\w.*/g,
+      replacer: '*',
+    },
+  },
+})
+```
+
+### mask-json
+```javascript
+const maskJson = require('mask-json')
+const { logger, httpLogger } = escriba({
+  loggerEngine,
+  service: 'bla',
+  maskEngine: maskJson,
+  sensitive: { // `mask-json` sensitive format
+    blacklist: ['secret'],
+    options: {
+      replacement: '*',
+    },
+  },
+})
+```
 ## Examples
 
 The `log-generator` inside `examples` folder will run a Node.js application that will make a request for itself every in an interval defined by the user (in milliseconds). The application will get input values from an environment variable `ESCRIBA_TIMEOUT`(3000 is the default value, this represents 3 seconds)

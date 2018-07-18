@@ -1,5 +1,7 @@
 const log4js = require('log4js').getLogger()
 const winston = require('winston')
+const ironMask = require('iron-mask')
+const maskJson = require('mask-json')
 
 const { test } = require('ava')
 const utils = require('../../src/utils')
@@ -24,13 +26,13 @@ test('stringify: with a invalid JSON object', t => {
 
 test('stringify: with a valid error object', t => {
   const logStringified = utils.stringify({
-    id: 1, 
+    id: 1,
     message: new Error('Error Message')
-  }) 
-  
+  })
+
   const logObject = JSON.parse(logStringified)
   const logError = logObject.message
-  
+
   t.is(logError.message, 'Error Message')
   t.true(logError.stack.includes('Error: Error Message'))
 })
@@ -61,4 +63,20 @@ test('isVendorLoggerValid: with a winston instance', t => {
 
 test('isVendorLoggerValid: with a invalid logger instance', t => {
   t.is(utils.isVendorLoggerValid({ info: () => 1 }), false)
+})
+
+test('isIronMaskVendor: with an iron-mask instance', t => {
+  t.is(utils.isIronMaskVendor(ironMask), true)
+})
+
+test('isIronMaskVendor: with a mask-json instance', t => {
+  t.is(utils.isIronMaskVendor(maskJson), false)
+})
+
+test('isMaskJsonVendor: with a mask-json instance', t => {
+  t.is(utils.isMaskJsonVendor(maskJson), true)
+})
+
+test('isMaskJsonVendor: with an iron-mask instance', t => {
+  t.is(utils.isMaskJsonVendor(ironMask), false)
 })

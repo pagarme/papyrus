@@ -31,10 +31,32 @@ const isVendorLoggerValid = vendor => {
   return !R.contains(false, validationResult)
 }
 
+const isIronMaskVendor = vendor => {
+  if (!R.is(Object, vendor)) return false
+  if (!R.is(Function, R.path(['create'], vendor))) return false
+  if (!R.is(Function, vendor.create({}))) return false
+  return true
+}
+
+const isMaskJsonVendor = vendor => {
+  if (!R.is(Function, vendor)) return false
+  if (!R.equals(vendor.length, 1)) return false
+  const mask = vendor()
+  if (!R.is(Function, mask)) return false
+  if (!R.equals(mask.length, 1)) return false
+  return true
+}
+
+const isVendorMaskValid = maskVendor =>
+  isIronMaskVendor(maskVendor) || isMaskJsonVendor(maskVendor)
+
 module.exports = {
   parseStringToJSON,
   pickProperties,
   generateLogLevel,
   isVendorLoggerValid,
+  isIronMaskVendor,
+  isMaskJsonVendor,
+  isVendorMaskValid,
   stringify
 }
