@@ -12,9 +12,19 @@ const buildResLog = propsToLog => ({ req, res }) => {
   const env = pickProperties(process.env, propsToLog)
 
   const resProps = pickProperties(res, propsToLog)
+
+  const reqResProps = pickProperties(
+    {
+      req,
+      res
+    },
+    propsToLog
+  )
+
   return R.mergeAll([
     reqProps,
     resProps,
+    reqResProps,
     {
       level,
       from: 'response',
