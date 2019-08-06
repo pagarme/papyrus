@@ -4,7 +4,13 @@ const { createResponseLogger } = require('./response-logger')
 const { createRequestLogger } = require('./request-logger')
 const { createSkipper } = require('./skipper')
 
-const prepareConfigProps = ({ envToLog, propsToLog, skipRules, logIdPath }) => {
+const prepareConfigProps = ({
+  envToLog,
+  propsToLog,
+  skipRules,
+  logIdPath,
+  propMaxLength
+}) => {
   const defaultPropsToLog = R.defaultTo({}, propsToLog)
   const defaultSkipRules = R.defaultTo([], skipRules)
   const defaultEnvToLog = R.defaultTo([], envToLog)
@@ -24,7 +30,8 @@ const prepareConfigProps = ({ envToLog, propsToLog, skipRules, logIdPath }) => {
   return {
     propsToLog: propsToLogConfig,
     skipRules: defaultSkipRules,
-    logIdPath: defaultLogIdPath
+    logIdPath: defaultLogIdPath,
+    propMaxLength
   }
 }
 
@@ -37,11 +44,27 @@ const middleware = (requestLogger, responseLogger, logIdPath, skipper) => (req, 
 }
 
 const httpLogger = (logger, messageBuilder, config) => {
-  const { propsToLog, skipRules, logIdPath } = prepareConfigProps(config)
+  const {
+    propsToLog,
+    skipRules,
+    logIdPath,
+    propMaxLength
+  } = prepareConfigProps(config)
   const { request, response } = propsToLog
   const skipper = createSkipper(skipRules)
-  const reqLogger = createRequestLogger(logger, messageBuilder, request)
-  const resLogger = createResponseLogger(logger, messageBuilder, response, skipper)
+  const reqLogger = createRequestLogger({
+    logger,
+    messageBuilder,
+    request,
+    propMaxLength
+  })
+  const resLogger = createResponseLogger({
+    logger,
+    messageBuilder,
+    response,
+    skipper,
+    propMaxLength
+  })
   return middleware(reqLogger, resLogger, logIdPath, skipper)
 }
 

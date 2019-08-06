@@ -50,6 +50,12 @@ const isMaskJsonVendor = vendor => {
 const isVendorMaskValid = maskVendor =>
   isIronMaskVendor(maskVendor) || isMaskJsonVendor(maskVendor)
 
+const filterLargeProp = (object, prop, propLengthLimit) => {
+  if (!object[prop]) return
+
+  return JSON.stringify(object[prop]).length > propLengthLimit ? {} : object[prop]
+}
+
 module.exports = {
   parseStringToJSON,
   pickProperties,
@@ -58,5 +64,6 @@ module.exports = {
   isIronMaskVendor,
   isMaskJsonVendor,
   isVendorMaskValid,
-  stringify
+  stringify,
+  filterLargeProp
 }
