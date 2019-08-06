@@ -37,11 +37,27 @@ const middleware = (requestLogger, responseLogger, logIdPath, skipper) => (req, 
 }
 
 const httpLogger = (logger, messageBuilder, config) => {
-  const { propsToLog, skipRules, logIdPath } = prepareConfigProps(config)
+  const {
+    propsToLog,
+    skipRules,
+    bodyLengthLimit,
+    logIdPath
+  } = prepareConfigProps(config)
   const { request, response } = propsToLog
   const skipper = createSkipper(skipRules)
-  const reqLogger = createRequestLogger(logger, messageBuilder, request)
-  const resLogger = createResponseLogger(logger, messageBuilder, response, skipper)
+  const reqLogger = createRequestLogger({
+    logger,
+    messageBuilder,
+    request,
+    bodyLengthLimit
+  })
+  const resLogger = createResponseLogger({
+    logger,
+    messageBuilder,
+    response,
+    skipper,
+    bodyLengthLimit
+  })
   return middleware(reqLogger, resLogger, logIdPath, skipper)
 }
 
