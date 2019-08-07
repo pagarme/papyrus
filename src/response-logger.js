@@ -1,17 +1,26 @@
 const R = require('ramda')
-const { parseStringToJSON, pickProperties, generateLogLevel, stringify } = require('./utils')
+const {
+  parseStringToJSON,
+  pickProperties,
+  generateLogLevel,
+  stringify,
+  filterLargeProp,
+  filterLargeUrl
+} = require('./utils')
 
-const buildResLog = propsToLog => ({ req, res }) => {
+const buildResLog = (propsToLog, propMaxLength = {}) => ({ req, res }) => {
   const level = generateLogLevel(res.statusCode)
 
   const reqProps = R.merge(
     pickProperties(req, propsToLog),
     pickProperties(req.headers, propsToLog)
   )
-
   const env = pickProperties(process.env, propsToLog)
 
   const resProps = pickProperties(res, propsToLog)
+
+  resProps.body = filterLargeProp(resProps.body, propMaxLength.body)
+  reqProps.url = filterLargeUrl(reqProps.url, propMaxLength.url)
 
   const reqResProps = pickProperties(
     {
@@ -51,7 +60,14 @@ const addLatency = (req, propsToLog) => message => {
   return R.merge(message, { latency: message.startTime - req.startTime })
 }
 
-const captureLog = (http, propsToLog, skipper, logger, messageBuilder) => {
+const captureLog = ({
+  http,
+  propsToLog,
+  skipper,
+  logger,
+  messageBuilder,
+  propMaxLength
+}) => {
   const { req, res } = http
   const { write, end } = res
   const chunks = []
@@ -64,9 +80,8 @@ const captureLog = (http, propsToLog, skipper, logger, messageBuilder) => {
 
   res.end = chunk => {
     if (chunk && !shouldSkipChunk) chunks.push(Buffer.from(chunk))
-
     prepareResLog(req, res, Buffer.concat(chunks))
-      .then(buildResLog(propsToLog))
+      .then(buildResLog(propsToLog, propMaxLength))
       .then(messageBuilder)
       .then(addLatency(req, propsToLog))
       .then(loggerByStatusCode(logger))
@@ -77,8 +92,24 @@ const captureLog = (http, propsToLog, skipper, logger, messageBuilder) => {
   return res
 }
 
-const responseLogger = (logger, messageBuilder, propsToLog, skipper) => (req, res) => (
-  captureLog({ req, res }, propsToLog, skipper, logger, messageBuilder)
+const responseLogger = ({
+  logger,
+  messageBuilder,
+  response: propsToLog,
+  skipper,
+  propMaxLength
+}) => (req, res) => (
+  captureLog({
+    http: { req, res },
+    propsToLog,
+    skipper,
+    logger,
+    messageBuilder,
+    propMaxLength
+  })
 )
 
-module.exports = { createResponseLogger: responseLogger }
+module.exports = {
+  createResponseLogger: responseLogger,
+  buildResLog
+}
