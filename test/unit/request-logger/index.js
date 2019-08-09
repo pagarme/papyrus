@@ -2,9 +2,8 @@ const { test } = require('ava')
 const log4js = require('log4js')
 const ironMask = require('iron-mask')
 
-const { createRequestLogger } = require('../../src/request-logger')
-const { createMessageBuilder } = require('../../src/message-builder.js')
-const { createLogger } = require('../../src/logger')
+const { createRequestLogger } = require('../../../src/request-logger')
+const { createMessageBuilder } = require('../../../src/message-builder.js')
 
 let reqLogger = {}
 
@@ -45,7 +44,6 @@ test.before(() => {
     logger,
     messageBuilder,
     request,
-    propLengthLimit: 15
   })
 })
 
@@ -67,22 +65,4 @@ test('should return body content', t => {
 
   const { body } = reqLogger(req)
   t.deepEqual(body, expectedBody)
-})
-
-test('should return empty object', t => {
-  const req = {
-    id: 123,
-    body: {
-      foo: 'bar',
-      bar: 'foo'
-    },
-    method: 'POST',
-    url: 'https://foobar.com',
-    user_agent: 'pagarme-ruby',
-    env: {}
-  }
-
-  const { body } = reqLogger(req)
-
-  t.deepEqual(body, {})
 })
