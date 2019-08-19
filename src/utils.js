@@ -50,6 +50,26 @@ const isMaskJsonVendor = vendor => {
 const isVendorMaskValid = maskVendor =>
   isIronMaskVendor(maskVendor) || isMaskJsonVendor(maskVendor)
 
+const filterLargeProp = (prop, propLengthLimit) => {
+  if (!prop) return
+
+  if (propLengthLimit === undefined) return prop
+
+  const setDefaultProp = () => Array.isArray(prop) ? [] : {}
+
+  return JSON.stringify(prop).length > propLengthLimit ? setDefaultProp() : prop
+}
+
+const filterLargeUrl = (url, urlLengthLimit) => {
+  if (!url) return
+
+  if (urlLengthLimit === undefined) return url
+
+  const truncateUrl = () => url.substring(0, urlLengthLimit - 3) + '...'
+
+  return url.length > urlLengthLimit ? truncateUrl(url) : url
+}
+
 module.exports = {
   parseStringToJSON,
   pickProperties,
@@ -58,5 +78,7 @@ module.exports = {
   isIronMaskVendor,
   isMaskJsonVendor,
   isVendorMaskValid,
-  stringify
+  stringify,
+  filterLargeProp,
+  filterLargeUrl
 }
