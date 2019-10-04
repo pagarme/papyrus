@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint src",
-    "test": "nyc ava 'test/**/*.js'",
+    "test": "nyc ava test/**/*.js",
     "coveralls": "nyc report --reporter=text-lcov | coveralls"
   },
   "repository": {
@@ -27,7 +27,7 @@
     "ramda": "^0.23.0"
   },
   "devDependencies": {
-    "ava": "^0.25.0",
+    "ava": "^2.4.0",
     "chai": "^3.5.0",
     "coveralls": "^3.0.2",
     "eslint": "^5.1.0",
@@ -38,7 +38,7 @@
     "eslint-plugin-standard": "^3.0.1",
     "log4js": "^3.0.0",
     "mask-json": "^1.0.2",
-    "nyc": "^13.0.0",
+    "nyc": "^14.1.1",
     "winston": "^2.3.1"
   }
 }
