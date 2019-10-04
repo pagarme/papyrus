@@ -1,5 +1,5 @@
 const { forEach, filter } = require('ramda')
-const { test } = require('ava')
+const test = require('ava')
 const { createSkipper } = require('../../src/skipper')
 
 const methods = [
@@ -153,6 +153,6 @@ test('EmptySkipRule: Do not skip any log', t => {
   const skipper = createSkipper(rules)
 
   forEach(method => (
-   t.false(skipper('/room', method))
+    t.false(skipper('/room', method))
   ), methods)
 })

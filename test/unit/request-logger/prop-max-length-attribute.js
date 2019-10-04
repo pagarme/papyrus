@@ -1,4 +1,4 @@
-const { test } = require('ava')
+const test = require('ava')
 const log4js = require('log4js')
 const ironMask = require('iron-mask')
 
