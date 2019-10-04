@@ -128,25 +128,6 @@ test('SkipByRoute: Skip only GET method for /player route and its children', t =
   }, methodsWithoutGet)
 })
 
-test('SkipByRoute: Skip only GET method for /player route and its children', t => {
-  const rules = [{
-    route: /\/player/,
-    method: /GET/,
-    onlyBody: false
-  }]
-
-  const skipper = createSkipper(rules)
-  const methodsWithoutGet = filter(method => method !== 'GET', methods)
-
-  t.true(skipper('/player', 'GET'))
-  t.true(skipper('/player/1', 'GET'))
-
-  forEach(method => {
-    t.false(skipper('/player', method))
-    t.false(skipper('/player/1', method))
-  }, methodsWithoutGet)
-})
-
 test('EmptySkipRule: Do not skip any log', t => {
   const rules = []
 
