@@ -1,5 +1,5 @@
 const R = require('ramda')
-const { test } = require('ava')
+const test = require('ava')
 const { createMessageBuilder } = require('../../src/message-builder')
 
 let messageBuilder = {}

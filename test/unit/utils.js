@@ -3,7 +3,7 @@ const winston = require('winston')
 const ironMask = require('iron-mask')
 const maskJson = require('mask-json')
 
-const { test } = require('ava')
+const test = require('ava')
 const utils = require('../../src/utils')
 
 test('parseStringToJSON: with a valid JSON string', t => (
