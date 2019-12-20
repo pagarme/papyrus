@@ -1,7 +1,9 @@
+require('dotenv').config()
+require('dd-trace').init()
 const express = require('express')
 const bodyParser = require('body-parser')
 const cuid = require('cuid')
-const { logger, httpLogger } = require('./lib/logger') 
+const { logger, httpLogger } = require('./lib/logger')
 const logGenerator = require('./lib/log-generator')
 
 const app = express()

@@ -13,10 +13,13 @@ const log4jsConfig = {
 log4js.configure(log4jsConfig)
 
 const escribaConfig = {
+  integrations: {
+    datadog: true
+  },
   loggerEngine: log4js.getLogger(),
   service: 'Escriba App',
-  httpConf : {
     envToLog: ['SHELL', 'PATH'],
+  httpConf: {
     propsToLog: {
       request: [
         'id',
