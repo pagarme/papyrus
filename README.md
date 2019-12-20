@@ -170,6 +170,23 @@ const { logger, httpLogger } = escriba({
   },
 })
 ```
+
+## Integrations
+You can enable integrations by simply passing a `integrations` key in the config. Like this:
+```javascript
+escriba({
+  integrations: {
+    datadog: true
+  }
+})
+```
+
+But remember, for each integration to work you may need to configure your application via environment variables.
+
+### Datadog
+You'll need to install `dd-trace` in your application.
+The Datadog integration enable this feature: https://docs.datadoghq.com/tracing/advanced/connect_logs_and_traces/.
+
 ## Examples
 
 The `log-generator` inside `examples` folder will run a Node.js application that will make a request for itself every in an interval defined by the user (in milliseconds). The application will get input values from an environment variable `ESCRIBA_TIMEOUT`(3000 is the default value, this represents 3 seconds)

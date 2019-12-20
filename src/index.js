@@ -7,7 +7,14 @@ const { isVendorLoggerValid, isVendorMaskValid } = require('./utils')
 const { createMessageBuilder } = require('./message-builder')
 
 const escriba = config => {
-  const { service, loggerEngine, sensitive, httpConf, maskEngine } = config
+  const {
+    service,
+    loggerEngine,
+    sensitive,
+    httpConf,
+    maskEngine,
+    integrations
+  } = config
 
   if (!isVendorLoggerValid(loggerEngine)) {
     throw new Error('You must pass a valid logger library. We accept log4js and winston libraries.')
@@ -20,7 +27,7 @@ const escriba = config => {
   }
 
   const messageMasker = createMask(mask, sensitive)
-  const messageBuilder = createMessageBuilder(messageMasker, service)
+  const messageBuilder = createMessageBuilder(messageMasker, service, integrations)
   const logger = createLogger(loggerEngine, messageBuilder)
   const httpLogger = createHttpLogger(loggerEngine, messageBuilder, httpConf || {})
   return { logger, httpLogger }

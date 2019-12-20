@@ -2,21 +2,19 @@ const os = require('os')
 const R = require('ramda')
 const moment = require('moment-timezone')
 
-const generateDefaultProps = service => ({
+const applyIntegrations = require('./integrations')
+
+const generateDefaultProps = (service, integrations) => applyIntegrations({
   service,
   startTime: moment().valueOf(),
   hostname: os.hostname(),
   pid: process.pid
-})
+}, integrations)
 
 const filterMessage = R.filter(prop => !R.isNil(prop))
 
-const builder = (messageMasker, service) => (message, propsToLog) => (
-  filterMessage(messageMasker(R.merge(message, generateDefaultProps(service))))
+const builder = (messageMasker, service, integrations) => (message, propsToLog) => (
+  filterMessage(messageMasker(R.merge(message, generateDefaultProps(service, integrations))))
 )
 
-const messageBuilder = (messageMasker, service) => (
-  builder(messageMasker, service)
-)
-
-module.exports = { createMessageBuilder: messageBuilder }
+module.exports = { createMessageBuilder: builder }
