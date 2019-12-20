@@ -2,7 +2,7 @@ const os = require('os')
 const R = require('ramda')
 const moment = require('moment-timezone')
 
-const applyIntegrations = require('./integrations')
+const { log: applyIntegrations } = require('./integrations')
 
 const generateDefaultProps = (service, integrations) => applyIntegrations({
   service,
