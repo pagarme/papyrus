@@ -14,7 +14,7 @@ const generateDefaultProps = (service, integrations) => applyIntegrations({
 const filterMessage = R.filter(prop => !R.isNil(prop))
 
 const builder = (messageMasker, service, integrations) => (message, propsToLog) => (
-  filterMessage(messageMasker(R.merge(message, generateDefaultProps(service, integrations))))
+  filterMessage(messageMasker(R.merge(generateDefaultProps(service, integrations), message)))
 )
 
 module.exports = { createMessageBuilder: builder }
