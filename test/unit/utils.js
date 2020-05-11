@@ -80,3 +80,43 @@ test('isMaskJsonVendor: with a mask-json instance', t => {
 test('isMaskJsonVendor: with an iron-mask instance', t => {
   t.is(utils.isMaskJsonVendor(ironMask), false)
 })
+
+test('parsePropsType: with a valid propsToParse parameter', t => {
+  const reqProps = {
+    body: {
+      id: 123
+    }
+  }
+
+  const propsToParse = {
+    'body.id': String
+  }
+
+  const expectedAssertion = {
+    body: {
+      id: '123'
+    }
+  }
+
+  t.deepEqual(utils.parsePropsType(reqProps, propsToParse), expectedAssertion)
+})
+
+test('parsePropsType: with an invalid propsToParse parameter', t => {
+  const reqProps = {
+    body: {
+      id: 123
+    }
+  }
+
+  const propsToParse = {
+    'body.foobar': String
+  }
+
+  const expectedAssertion = {
+    body: {
+      id: 123
+    }
+  }
+
+  t.deepEqual(utils.parsePropsType(reqProps, propsToParse), expectedAssertion)
+})

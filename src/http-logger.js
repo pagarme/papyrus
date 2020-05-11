@@ -9,7 +9,8 @@ const prepareConfigProps = ({
   propsToLog,
   skipRules,
   logIdPath,
-  propMaxLength
+  propMaxLength,
+  propsToParse
 }) => {
   const defaultPropsToLog = R.defaultTo({}, propsToLog)
   const defaultSkipRules = R.defaultTo([], skipRules)
@@ -31,7 +32,8 @@ const prepareConfigProps = ({
     propsToLog: propsToLogConfig,
     skipRules: defaultSkipRules,
     logIdPath: defaultLogIdPath,
-    propMaxLength
+    propMaxLength,
+    propsToParse
   }
 }
 
@@ -48,7 +50,8 @@ const httpLogger = (logger, messageBuilder, config) => {
     propsToLog,
     skipRules,
     logIdPath,
-    propMaxLength
+    propMaxLength,
+    propsToParse
   } = prepareConfigProps(config)
   const { request, response } = propsToLog
   const skipper = createSkipper(skipRules)
@@ -56,14 +59,16 @@ const httpLogger = (logger, messageBuilder, config) => {
     logger,
     messageBuilder,
     request,
-    propMaxLength
+    propMaxLength,
+    propsToParse
   })
   const resLogger = createResponseLogger({
     logger,
     messageBuilder,
     response,
     skipper,
-    propMaxLength
+    propMaxLength,
+    propsToParse
   })
   return middleware(reqLogger, resLogger, logIdPath, skipper)
 }

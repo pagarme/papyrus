@@ -70,6 +70,22 @@ const filterLargeUrl = (url, urlLengthLimit) => {
   return url.length > urlLengthLimit ? truncateUrl(url) : url
 }
 
+const parsePropsType = (reqProps, propsType) => {
+  const propsTypeKeys = R.keys(propsType)
+
+  propsTypeKeys.forEach(key => {
+    const propPath = key.split('.')
+    const reqProp = R.path(propPath, reqProps)
+
+    if (reqProp) {
+      const propTypeFunction = propsType[key]
+      reqProps = R.assocPath(propPath, propTypeFunction(reqProp), reqProps)
+    }
+  })
+
+  return reqProps
+}
+
 module.exports = {
   parseStringToJSON,
   pickProperties,
@@ -80,5 +96,6 @@ module.exports = {
   isVendorMaskValid,
   stringify,
   filterLargeProp,
-  filterLargeUrl
+  filterLargeUrl,
+  parsePropsType
 }
