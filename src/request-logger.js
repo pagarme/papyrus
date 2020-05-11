@@ -1,15 +1,24 @@
 const R = require('ramda')
 const { pickProperties, stringify } = require('./utils')
-const { filterLargeProp, filterLargeUrl } = require('./utils')
+const {
+  filterLargeProp,
+  filterLargeUrl,
+  parsePropsType
+} = require('./utils')
 
-const buildRequestLog = (propsToLog, propMaxLength = {}) => req => {
+const buildRequestLog = (
+  propsToLog,
+  propMaxLength = {},
+  propsToParse = {}
+) => req => {
   const reqProps = pickProperties(req, propsToLog)
   reqProps.body = filterLargeProp(reqProps.body, propMaxLength.body)
   reqProps.url = filterLargeUrl(reqProps.url, propMaxLength.url)
   const env = pickProperties(process.env, propsToLog)
   const headerProps = pickProperties(req.headers, propsToLog)
+  const reqParsedProps = parsePropsType(reqProps, propsToParse.request)
   return R.mergeAll([
-    reqProps,
+    reqParsedProps,
     headerProps,
     {
       level: 'info',
@@ -23,9 +32,10 @@ const requestLogger = ({
   logger,
   messageBuilder,
   request: propsToLog,
-  propMaxLength
+  propMaxLength,
+  propsToParse
 }) => (req) => {
-  const log = R.pipe(buildRequestLog(propsToLog, propMaxLength), messageBuilder)(req)
+  const log = R.pipe(buildRequestLog(propsToLog, propMaxLength, propsToParse), messageBuilder)(req)
   req.startTime = log.startTime
   logger.info(stringify(log))
   return log
