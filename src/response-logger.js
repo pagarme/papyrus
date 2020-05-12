@@ -5,10 +5,15 @@ const {
   generateLogLevel,
   stringify,
   filterLargeProp,
-  filterLargeUrl
+  filterLargeUrl,
+  parsePropsType
 } = require('./utils')
 
-const buildResLog = (propsToLog, propMaxLength = {}) => ({ req, res }) => {
+const buildResLog = (
+  propsToLog,
+  propMaxLength = {},
+  propsToParse = {}
+) => ({ req, res }) => {
   const level = generateLogLevel(res.statusCode)
 
   const reqProps = R.merge(
@@ -22,6 +27,8 @@ const buildResLog = (propsToLog, propMaxLength = {}) => ({ req, res }) => {
   resProps.body = filterLargeProp(resProps.body, propMaxLength.body)
   reqProps.url = filterLargeUrl(reqProps.url, propMaxLength.url)
 
+  const reqParsedProps = parsePropsType(reqProps, propsToParse.response)
+  const resParsedProps = parsePropsType(resProps, propsToParse.response)
   const reqResProps = pickProperties(
     {
       req,
@@ -31,8 +38,8 @@ const buildResLog = (propsToLog, propMaxLength = {}) => ({ req, res }) => {
   )
 
   return R.mergeAll([
-    reqProps,
-    resProps,
+    reqParsedProps,
+    resParsedProps,
     reqResProps,
     {
       level,
@@ -66,7 +73,8 @@ const captureLog = ({
   skipper,
   logger,
   messageBuilder,
-  propMaxLength
+  propMaxLength,
+  propsToParse
 }) => {
   const { req, res } = http
   const { write, end } = res
@@ -81,7 +89,7 @@ const captureLog = ({
   res.end = chunk => {
     if (chunk && !shouldSkipChunk) chunks.push(Buffer.from(chunk))
     prepareResLog(req, res, Buffer.concat(chunks))
-      .then(buildResLog(propsToLog, propMaxLength))
+      .then(buildResLog(propsToLog, propMaxLength, propsToParse))
       .then(messageBuilder)
       .then(addLatency(req, propsToLog))
       .then(loggerByStatusCode(logger))
@@ -97,7 +105,8 @@ const responseLogger = ({
   messageBuilder,
   response: propsToLog,
   skipper,
-  propMaxLength
+  propMaxLength,
+  propsToParse
 }) => (req, res) => (
   captureLog({
     http: { req, res },
@@ -105,7 +114,8 @@ const responseLogger = ({
     skipper,
     logger,
     messageBuilder,
-    propMaxLength
+    propMaxLength,
+    propsToParse
   })
 )
 

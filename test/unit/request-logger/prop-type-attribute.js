@@ -42,7 +42,7 @@ test('should return parsed body properties', t => {
   const propMaxLength = {}
   const propsToParse = {
     request: {
-      'body.id': parseInt,
+      'body.id': Number,
       'body.keys': String
     }
   }
