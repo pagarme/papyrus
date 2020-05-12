@@ -89,24 +89,6 @@ test('should return empty object', t => {
   t.deepEqual(body, {})
 })
 
-test('should return empty object', t => {
-  const req = {
-    id: 123,
-    body: [{
-      foo: 'bar',
-      bar: 'foo'
-    }],
-    method: 'POST',
-    url: 'https://foobar.com',
-    user_agent: 'pagarme-ruby',
-    env: {}
-  }
-
-  const { body } = reqLogger(req)
-
-  t.deepEqual(body, [])
-})
-
 test('should return url without query string parameters', t => {
   const req = {
     id: 123,
