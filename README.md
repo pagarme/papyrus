@@ -111,6 +111,15 @@ const { httpLogger } = escriba({
     propMaxLength: {
       body: 2048,
       url: 1024
+    },
+    propsToParse: {
+      request: {
+         'id': String,
+         'body.document_number': Number,
+      },
+      response: {
+         'body.customer.id': Number
+      }
     }
   }
 })
@@ -134,6 +143,8 @@ logger.info('some controller information', { id: req.id })
 Also it's possible to skip logs or only the body property through skipRules, in the example we are skiping logs from route `/status` for `all methods` and skiping the `body` property from routes that ends with `.csv` or `.xlsx`.
 
 The `propMaxLength` attribute is responsible to limit the number of characters for certain properties if they exist within `propsTolog` definition.
+
+The `propsToParse` attribute is responsible to parse any atribute based on a path, the parsing works by providing a valid javascript native Function (e.g String, Number etc).
 
 ## Masks
 
