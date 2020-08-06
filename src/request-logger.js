@@ -13,6 +13,8 @@ const buildRequestLog = (
 ) => req => {
   const reqProps = pickProperties(req, propsToLog)
   reqProps.body = filterLargeProp(reqProps.body, propMaxLength.body)
+
+  reqProps.url = req.originalUrl || req.url
   reqProps.url = filterLargeUrl(reqProps.url, propMaxLength.url)
   const env = pickProperties(process.env, propsToLog)
   const headerProps = pickProperties(req.headers, propsToLog)

@@ -41,3 +41,28 @@ test('should return body content', t => {
 
   t.deepEqual(body, expectedBody)
 })
+
+test('should return the correct url', t => {
+  const req = {
+    url: 'https://url.com',
+    originalUrl: 'https://original-url.com'
+  }
+
+  const res = {
+    statusCode: 200,
+    id: 123,
+    method: 'POST',
+    user_agent: 'pagarme-ruby',
+    env: {}
+  }
+
+  let log = buildLogResult({ req, res })
+
+  t.is(log.url, req.originalUrl)
+
+  req.originalUrl = ''
+
+  log = buildLogResult({ req, res })
+
+  t.is(log.url, req.url)
+})
