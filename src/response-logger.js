@@ -25,6 +25,7 @@ const buildResLog = (
   const resProps = pickProperties(res, propsToLog)
 
   resProps.body = filterLargeProp(resProps.body, propMaxLength.body)
+  reqProps.url = req.originalUrl || req.url
   reqProps.url = filterLargeUrl(reqProps.url, propMaxLength.url)
 
   const reqParsedProps = parsePropsType(reqProps, propsToParse.response)

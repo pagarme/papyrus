@@ -43,7 +43,7 @@ test.before(() => {
   reqLogger = createRequestLogger({
     logger,
     messageBuilder,
-    request,
+    request
   })
 })
 
@@ -65,4 +65,21 @@ test('should return body content', t => {
 
   const { body } = reqLogger(req)
   t.deepEqual(body, expectedBody)
+})
+
+test('should return the correct url', t => {
+  const req = {
+    url: 'https://url.com',
+    originalUrl: 'https://original-url.com'
+  }
+
+  let log = reqLogger(req)
+
+  t.is(log.url, req.originalUrl)
+
+  req.originalUrl = ''
+
+  log = reqLogger(req)
+
+  t.is(log.url, req.url)
 })
