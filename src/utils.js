@@ -1,18 +1,17 @@
 const R = require('ramda')
 const pokeprop = require('pokeprop')
 const circularJSON = require('circular-json')
+const { serializeError } = require('serialize-error')
 
 const parseStringToJSON = chunk => (
   Promise.resolve(chunk)
     .then(JSON.parse)
-    .catch(err => chunk)
+    .catch(_ => chunk)
 )
-
-const buildErrorObject = R.pick(['message', 'stack'])
 
 const stringify = log => {
   if (R.is(String, log)) return log
-  if (R.is(Error, log.message)) log.message = buildErrorObject(log.message)
+  if (R.is(Error, log.message)) log.message = serializeError(log.message)
   return circularJSON.stringify(log)
 }
 
