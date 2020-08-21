@@ -25,16 +25,45 @@ test('stringify: with a invalid JSON object', t => {
 })
 
 test('stringify: with a valid error object', t => {
+  const err = new Error('Error Message')
+
   const logStringified = utils.stringify({
     id: 1,
-    message: new Error('Error Message')
+    message: err
   })
 
   const logObject = JSON.parse(logStringified)
   const logError = logObject.message
 
-  t.is(logError.message, 'Error Message')
+  t.is(logError.message, err.message)
   t.true(logError.stack.includes('Error: Error Message'))
+})
+
+test('stringify: with a valid nested error object with multiple properties', t => {
+  const innerErr = new Error('Inner error message')
+  innerErr.username = 'foo'
+  innerErr.isValidUsername = true
+
+  const err = new Error('Error message')
+  err.cause = innerErr
+  err.correlationId = '4ac1-b431-cab1-4c1a'
+
+  const logStringified = utils.stringify({
+    id: 1,
+    message: err
+  })
+
+  const logObject = JSON.parse(logStringified)
+  const logError = logObject.message
+
+  t.is(logError.message, err.message)
+  t.is(logError.correlationId, err.correlationId)
+  t.true(logError.stack.includes('Error: Error message'))
+
+  t.is(logError.cause.message, innerErr.message)
+  t.is(logError.cause.username, innerErr.username)
+  t.is(logError.cause.isValidUsername, innerErr.isValidUsername)
+  t.true(logError.cause.stack.includes('Error: Inner error message'))
 })
 
 test('generateLogLevel: with status code 400', t => {
