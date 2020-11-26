@@ -2,8 +2,9 @@
   "name": "escriba",
   "version": "2.10.0",
   "description": "Logging with steroids",
-  "main": "src/index.js",
+  "main": "dist/index.js",
   "scripts": {
+    "prepare": "npm run build",
     "prebuild": "rimraf dist",
     "postbuild": "tsc --emitDeclarationOnly",
     "build": "babel src --extensions \".js,.ts,.json\" --out-dir dist --copy-files --no-copy-ignored",
