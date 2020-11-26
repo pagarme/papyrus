@@ -1,13 +1,39 @@
 {
-    "extends": "standard",
-    "plugins": [
-        "standard",
-        "promise"
+  "env": {
+    "node": true,
+    "jest": true
+  },
+  "extends": [
+    "standard"
+  ],
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "ecmaVersion": 12,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "@typescript-eslint"
+  ],
+  "rules": {
+    "no-unused-vars": "off",
+    "@typescript-eslint/no-unused-vars": [
+      "error"
     ],
-    "rules": {
-      "complexity": ["error", { "max": 5 }],
-      "max-depth": ["error", { "max": 1 }],
-      "no-new": [0],
-      "handle-callback-err": "warn" 
-    }
+    "@typescript-eslint/member-delimiter-style": [
+      "error",
+      {
+        "multiline": {
+          "delimiter": "none",
+          "requireLast": true
+        },
+        "singleline": {
+          "delimiter": "semi",
+          "requireLast": false
+        }
+      }
+    ]
+  },
+  "ignorePatterns": [
+    "dist"
+  ]
 }
