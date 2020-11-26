@@ -15,7 +15,7 @@ app.post('/escriba', (req, res) => {
 })
 
 app.get('/escriba', (req, res) => {
-  res.send('This is a log-generator example!!!');
+  res.send('This is a log-generator example!!!')
 })
 
 app.listen(3000, () => {
