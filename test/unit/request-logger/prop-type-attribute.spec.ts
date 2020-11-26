@@ -1,10 +1,8 @@
-const test = require('ava')
-const log4js = require('log4js')
+import log4js from 'log4js'
+import { createMessageBuilder } from '../../../src/message-builder'
+import { createRequestLogger } from '../../../src/request-logger'
+
 const ironMask = require('iron-mask')
-
-const { createRequestLogger } = require('../../../src/request-logger')
-const { createMessageBuilder } = require('../../../src/message-builder.js')
-
 const loggerEngine = log4js.configure({
   appenders: {
     api: {
@@ -38,7 +36,7 @@ const request = [
   'env'
 ]
 
-test('should return parsed body properties', t => {
+test('should return parsed body properties', () => {
   const propMaxLength = {}
   const propsToParse = {
     request: {
@@ -62,7 +60,7 @@ test('should return parsed body properties', t => {
     bar: 'foo'
   }
 
-  const req = {
+  const req: any = {
     body: {
       id: '123',
       keys: [1, 2, 3],
@@ -71,5 +69,5 @@ test('should return parsed body properties', t => {
     }
   }
   const { body } = reqLogger(req)
-  t.deepEqual(body, expectedBody)
+  expect(body).toEqual(expectedBody)
 })

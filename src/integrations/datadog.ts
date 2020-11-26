@@ -1,7 +1,7 @@
-const tracer = require('dd-trace')
-const formats = require('dd-trace/ext/formats')
+import tracer from 'dd-trace'
+import formats from 'dd-trace/ext/formats'
 
-module.exports = (log) => {
+export default (log: any) => {
   const span = tracer.scope().active()
 
   if (span) {

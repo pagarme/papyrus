@@ -1,8 +1,8 @@
-const R = require('ramda')
-const cuid = require('cuid')
-const { createResponseLogger } = require('./response-logger')
-const { createRequestLogger } = require('./request-logger')
-const { createSkipper } = require('./skipper')
+import cuid from 'cuid'
+import R from 'ramda'
+import { createRequestLogger } from './request-logger'
+import { createResponseLogger } from './response-logger'
+import { createSkipper } from './skipper'
 
 const prepareConfigProps = ({
   envToLog,
@@ -11,7 +11,7 @@ const prepareConfigProps = ({
   logIdPath,
   propMaxLength,
   propsToParse
-}) => {
+}: any) => {
   const defaultPropsToLog = R.defaultTo({}, propsToLog)
   const defaultSkipRules = R.defaultTo([], skipRules)
   const defaultEnvToLog = R.defaultTo([], envToLog)
@@ -37,7 +37,7 @@ const prepareConfigProps = ({
   }
 }
 
-const middleware = (requestLogger, responseLogger, logIdPath, skipper) => (req, res, next) => {
+const middleware = (requestLogger: any, responseLogger: any, logIdPath: any, skipper: any) => (req: any, res: any, next: any) => {
   if (skipper(req.url, req.method)) return next()
   req.id = R.path(R.split('.', logIdPath), req) || cuid()
   requestLogger(req)
@@ -45,7 +45,7 @@ const middleware = (requestLogger, responseLogger, logIdPath, skipper) => (req, 
   next()
 }
 
-const httpLogger = (logger, messageBuilder, config) => {
+export const createHttpLogger = (logger: any, messageBuilder: any, config: any) => {
   const {
     propsToLog,
     skipRules,
@@ -72,5 +72,3 @@ const httpLogger = (logger, messageBuilder, config) => {
   })
   return middleware(reqLogger, resLogger, logIdPath, skipper)
 }
-
-module.exports = { createHttpLogger: httpLogger }

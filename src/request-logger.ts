@@ -1,16 +1,18 @@
-const R = require('ramda')
-const { pickProperties, stringify } = require('./utils')
-const {
+import {
   filterLargeProp,
   filterLargeUrl,
-  parsePropsType
-} = require('./utils')
+  parsePropsType,
+  pickProperties,
+  stringify
+} from '@escriba/utils'
+import { Request } from 'express'
+import R from 'ramda'
 
 const buildRequestLog = (
-  propsToLog,
-  propMaxLength = {},
-  propsToParse = {}
-) => req => {
+  propsToLog: any,
+  propMaxLength = {} as any,
+  propsToParse = {} as any
+) => <P, Q, R, S>(req: Request<P, Q, R, S> & { body?: any }) => {
   const reqProps = pickProperties(req, propsToLog)
   reqProps.body = filterLargeProp(reqProps.body, propMaxLength.body)
 
@@ -30,17 +32,15 @@ const buildRequestLog = (
   ])
 }
 
-const requestLogger = ({
+export const createRequestLogger = ({
   logger,
   messageBuilder,
   request: propsToLog,
   propMaxLength,
   propsToParse
-}) => (req) => {
-  const log = R.pipe(buildRequestLog(propsToLog, propMaxLength, propsToParse), messageBuilder)(req)
+}: any) => <P, Q, R, S>(req: Request<P, Q, R, S> & { startTime?: any }) => {
+  const log: any = R.pipe(buildRequestLog(propsToLog, propMaxLength, propsToParse), messageBuilder)(req)
   req.startTime = log.startTime
   logger.info(stringify(log))
   return log
 }
-
-module.exports = { createRequestLogger: requestLogger }

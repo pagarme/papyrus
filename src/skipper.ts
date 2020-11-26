@@ -1,16 +1,16 @@
-const { flip, test, reduce } = require('ramda')
+import { flip, reduce, test } from 'ramda'
 
-const checkRuleBy = property => flip(test)(property)
+const checkRuleBy = (property: any) => flip(test)(property)
 
-const skipper = rules => (reqRoute, reqMethod, shouldSkipOnlyBody = false) => {
+export const createSkipper = (rules: any) => (reqRoute: any, reqMethod: any, shouldSkipOnlyBody = false) => {
   const checkMethod = checkRuleBy(reqMethod)
   const checkRoute = checkRuleBy(reqRoute)
 
-  const checkRules = (route, method) => (
+  const checkRules = (route: any, method: any) => (
     checkRoute(route) && checkMethod(method)
   )
 
-  const decision = reduce(({ shouldSkip, onlyBody }, rule) => ({
+  const decision = reduce(({ shouldSkip, onlyBody }: any, rule: any) => ({
     shouldSkip: checkRules(rule.route, rule.method) || shouldSkip,
     onlyBody: (checkRules(rule.route, rule.method) && rule.onlyBody) || onlyBody
   }), { shouldSkip: false, onlyBody: false }, rules)
@@ -18,5 +18,3 @@ const skipper = rules => (reqRoute, reqMethod, shouldSkipOnlyBody = false) => {
   if (shouldSkipOnlyBody) return decision.shouldSkip && decision.onlyBody
   return decision.shouldSkip && !decision.onlyBody
 }
-
-module.exports = { createSkipper: skipper }

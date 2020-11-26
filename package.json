@@ -9,7 +9,7 @@
     "build": "babel src --extensions \".js,.ts,.json\" --out-dir dist --copy-files --no-copy-ignored",
     "watch": "babel src --watch --extensions \".js,.ts,.json\" --out-dir dist --copy-files --no-copy-ignored",
     "lint": "eslint -c .eslintrc.json {src,test}/**/*.ts",
-    "test": "jest --silent --runInBand",
+    "test": "jest --silent",
     "coveralls": "coveralls < coverage/lcov.info"
   },
   "repository": {
