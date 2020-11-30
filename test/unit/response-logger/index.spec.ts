@@ -1,10 +1,8 @@
-const test = require('ava')
+import { buildResLog } from '../../../src/response-logger'
 
-const { buildResLog } = require('../../../src/response-logger')
+let buildLogResult: any = {}
 
-let buildLogResult = {}
-
-test.before(() => {
+beforeEach(() => {
   const propsToLog = [
     'id',
     'method',
@@ -17,7 +15,7 @@ test.before(() => {
   buildLogResult = buildResLog(propsToLog)
 })
 
-test('should return body content', t => {
+test('should return body content', () => {
   const expectedBody = {
     foo: 'bar'
   }
@@ -39,10 +37,10 @@ test('should return body content', t => {
 
   const { body } = buildLogResult({ req, res })
 
-  t.deepEqual(body, expectedBody)
+  expect(body).toEqual(expectedBody)
 })
 
-test('should return the correct url', t => {
+test('should return the correct url', () => {
   const req = {
     url: 'https://url.com',
     originalUrl: 'https://original-url.com'
@@ -58,11 +56,11 @@ test('should return the correct url', t => {
 
   let log = buildLogResult({ req, res })
 
-  t.is(log.url, req.originalUrl)
+  expect(log.url).toBe(req.originalUrl)
 
   req.originalUrl = ''
 
   log = buildLogResult({ req, res })
 
-  t.is(log.url, req.url)
+  expect(log.url).toBe(req.url)
 })

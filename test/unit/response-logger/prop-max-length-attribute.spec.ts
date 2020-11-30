@@ -1,10 +1,8 @@
-const test = require('ava')
+import { buildResLog } from '../../../src/response-logger'
 
-const { buildResLog } = require('../../../src/response-logger')
+let buildLogResult: any = {}
 
-let buildLogResult = {}
-
-test.before(() => {
+beforeEach(() => {
   const propsToLog = [
     'id',
     'method',
@@ -22,7 +20,7 @@ test.before(() => {
   buildLogResult = buildResLog(propsToLog, propMaxLength)
 })
 
-test('should return body content', t => {
+test('should return body content', () => {
   const expectedBody = {
     foo: 'bar'
   }
@@ -44,10 +42,10 @@ test('should return body content', t => {
 
   const { body } = buildLogResult({ req, res })
 
-  t.deepEqual(body, expectedBody)
+  expect(body).toEqual(expectedBody)
 })
 
-test('should return empty object', t => {
+test('should return empty object', () => {
   const req = {
   }
 
@@ -66,10 +64,10 @@ test('should return empty object', t => {
 
   const { body } = buildLogResult({ req, res })
 
-  t.deepEqual(body, {})
+  expect(body).toEqual({})
 })
 
-test('should return empty array', t => {
+test('should return empty array', () => {
   const req = {
   }
 
@@ -88,10 +86,10 @@ test('should return empty array', t => {
 
   const { body } = buildLogResult({ req, res })
 
-  t.deepEqual(body, [])
+  expect(body).toEqual([])
 })
 
-test('should return url without query string parameters', t => {
+test('should return url without query string parameters', () => {
   const req = {
     url: '/myurl?prop1=value1&prop2=value2'
   }
@@ -110,5 +108,5 @@ test('should return url without query string parameters', t => {
 
   const { url } = buildLogResult({ req, res })
 
-  t.deepEqual(url, '/myurl?prop1...')
+  expect(url).toEqual('/myurl?prop1...')
 })

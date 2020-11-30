@@ -18,7 +18,7 @@ const escribaConfig = {
   },
   loggerEngine: log4js.getLogger(),
   service: 'Escriba App',
-    envToLog: ['SHELL', 'PATH'],
+  envToLog: ['SHELL', 'PATH'],
   httpConf: {
     propsToLog: {
       request: [

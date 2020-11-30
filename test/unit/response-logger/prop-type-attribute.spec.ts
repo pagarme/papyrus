@@ -1,8 +1,6 @@
-const test = require('ava')
+import { buildResLog } from '../../../src/response-logger'
 
-const { buildResLog } = require('../../../src/response-logger')
-
-let buildLogResult = {}
+let buildLogResult: any = {}
 
 const propsToLog = [
   'id',
@@ -16,13 +14,13 @@ const propsToLog = [
 const propsToParse = {
   response: {
     'body.foo': String,
-    'id': parseInt
+    id: parseInt
   }
 }
 
 buildLogResult = buildResLog(propsToLog, {}, propsToParse)
 
-test('should return parsed body content', t => {
+test('should return parsed body content', () => {
   const expectedResponse = {
     id: 123,
     body: {
@@ -46,10 +44,10 @@ test('should return parsed body content', t => {
     method: 'POST',
     from: 'response',
     env: {},
-    level: 'info',
+    level: 'info'
   }
 
   const response = buildLogResult({ req, res })
 
-  t.deepEqual(response, expectedResponse)
+  expect(response).toEqual(expectedResponse)
 })

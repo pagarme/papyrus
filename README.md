@@ -66,17 +66,18 @@ We'll also skip status route, options method and body property from routes that 
 
 It's important to hide sentive information like api_key.
 
-```js
-const express = require('express')
-const log4js = require('log4js').getLogger()
-const escriba = require('escriba')
-const cuid = require('cuid')
-const roomController = require('./controllers/room')
+```javascript
+import express from 'express'
+import log4js from 'log4js'
+import escriba from 'escriba'
+import cuid from 'cuid'
+import roomController from './controllers/room'
 
 const app = express()
+const log4jsLogger = log4js.getLogger()
 
 const { httpLogger } = escriba({
-  loggerEngine: log4js,
+  loggerEngine: log4jsLogger,
   sensitive: {
     password: {
       paths: ['body.api_key'],

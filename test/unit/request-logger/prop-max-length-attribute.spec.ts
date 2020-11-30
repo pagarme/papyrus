@@ -1,13 +1,11 @@
-const test = require('ava')
-const log4js = require('log4js')
+import log4js from 'log4js'
+import { createMessageBuilder } from '../../../src/message-builder'
+import { createRequestLogger } from '../../../src/request-logger'
+
 const ironMask = require('iron-mask')
+let reqLogger: any = {}
 
-const { createRequestLogger } = require('../../../src/request-logger')
-const { createMessageBuilder } = require('../../../src/message-builder.js')
-
-let reqLogger = {}
-
-test.before(() => {
+beforeEach(() => {
   const loggerEngine = log4js.configure({
     appenders: {
       api: {
@@ -43,11 +41,15 @@ test.before(() => {
   reqLogger = createRequestLogger({
     logger,
     messageBuilder,
-    request
+    request,
+    propMaxLength: {
+      body: 15,
+      url: 15
+    }
   })
 })
 
-test('should return body content', t => {
+test('should return body content', () => {
   const expectedBody = {
     foo: 'bar'
   }
@@ -64,22 +66,37 @@ test('should return body content', t => {
   }
 
   const { body } = reqLogger(req)
-  t.deepEqual(body, expectedBody)
+  expect(body).toEqual(expectedBody)
 })
 
-test('should return the correct url', t => {
+test('should return empty object', () => {
   const req = {
-    url: 'https://url.com',
-    originalUrl: 'https://original-url.com'
+    id: 123,
+    body: {
+      foo: 'bar',
+      bar: 'foo'
+    },
+    method: 'POST',
+    url: 'https://foobar.com',
+    user_agent: 'pagarme-ruby',
+    env: {}
   }
 
-  let log = reqLogger(req)
+  const { body } = reqLogger(req)
 
-  t.is(log.url, req.originalUrl)
+  expect(body).toEqual({})
+})
 
-  req.originalUrl = ''
+test('should return url without query string parameters', () => {
+  const req = {
+    id: 123,
+    url: '/myurl?prop1=value1&prop2=value2',
+    method: 'POST',
+    user_agent: 'pagarme-ruby',
+    env: {}
+  }
 
-  log = reqLogger(req)
+  const { url } = reqLogger(req)
 
-  t.is(log.url, req.url)
+  expect(url).toEqual('/myurl?prop1...')
 })

@@ -1,43 +1,45 @@
-const R = require('ramda')
-const pokeprop = require('pokeprop')
-const circularJSON = require('circular-json')
-const { serializeError } = require('serialize-error')
+import circularJSON from 'circular-json'
+import R from 'ramda'
+import { serializeError } from 'serialize-error'
+import { ParseFunction } from '../types'
 
-const parseStringToJSON = chunk => (
+const pokeprop: <T>(arr: string[], obj: T) => Partial<T> = require('pokeprop')
+
+export const parseStringToJSON = (chunk: string) => (
   Promise.resolve(chunk)
     .then(JSON.parse)
-    .catch(_ => chunk)
+    .catch(() => chunk)
 )
 
-const stringify = log => {
-  if (R.is(String, log)) return log
+export const stringify = (log: any) => {
+  if (typeof log === 'string') return log
   if (R.is(Error, log.message)) log.message = serializeError(log.message)
   return circularJSON.stringify(log)
 }
 
-const pickProperties = R.flip(pokeprop)
+export const pickProperties = R.flip(pokeprop)
 
-const generateLogLevel = statusCode => {
+export const generateLogLevel = (statusCode: number): 'info' | 'warn' | 'error' => {
   if (statusCode < 400 || R.isNil(statusCode)) return 'info'
   if (statusCode < 500) return 'warn'
   return 'error'
 }
 
-const isVendorLoggerValid = vendor => {
-  if (!R.is(Object, vendor)) return false
+export const isVendorLoggerValid = (vendor: any): boolean => {
+  if (typeof vendor !== 'object') return false
   const levels = ['debug', 'error', 'warn', 'info']
   const validationResult = levels.map(level => R.is(Function, vendor[level]))
   return !R.contains(false, validationResult)
 }
 
-const isIronMaskVendor = vendor => {
-  if (!R.is(Object, vendor)) return false
+export const isIronMaskVendor = (vendor: any): boolean => {
+  if (typeof vendor !== 'object') return false
   if (!R.is(Function, R.path(['create'], vendor))) return false
   if (!R.is(Function, vendor.create({}))) return false
   return true
 }
 
-const isMaskJsonVendor = vendor => {
+export const isMaskJsonVendor = (vendor: any): boolean => {
   if (!R.is(Function, vendor)) return false
   if (!R.equals(vendor.length, 1)) return false
   const mask = vendor()
@@ -46,10 +48,10 @@ const isMaskJsonVendor = vendor => {
   return true
 }
 
-const isVendorMaskValid = maskVendor =>
+export const isVendorMaskValid = (maskVendor: any): boolean =>
   isIronMaskVendor(maskVendor) || isMaskJsonVendor(maskVendor)
 
-const filterLargeProp = (prop, propLengthLimit) => {
+export const filterLargeProp = <T>(prop?: T, propLengthLimit?: number): {} | T | undefined => {
   if (!prop) return
 
   if (propLengthLimit === undefined) return prop
@@ -59,18 +61,18 @@ const filterLargeProp = (prop, propLengthLimit) => {
   return JSON.stringify(prop).length > propLengthLimit ? setDefaultProp() : prop
 }
 
-const filterLargeUrl = (url, urlLengthLimit) => {
+export const filterLargeUrl = (url?: string, urlLengthLimit?: number) => {
   if (!url) return
 
   if (urlLengthLimit === undefined) return url
 
   const truncateUrl = () => url.substring(0, urlLengthLimit - 3) + '...'
 
-  return url.length > urlLengthLimit ? truncateUrl(url) : url
+  return url.length > urlLengthLimit ? truncateUrl() : url
 }
 
-const parsePropsType = (reqProps, propsType) => {
-  const propsTypeKeys = R.keys(propsType)
+export const parsePropsType = (reqProps: { [key: string]: any }, propsType: { [key: string]: ParseFunction }) => {
+  const propsTypeKeys = R.keys(propsType) as string[]
 
   if (propsTypeKeys.length === 0) {
     return reqProps
@@ -87,18 +89,4 @@ const parsePropsType = (reqProps, propsType) => {
 
     return acc
   }, reqProps)
-}
-
-module.exports = {
-  parseStringToJSON,
-  pickProperties,
-  generateLogLevel,
-  isVendorLoggerValid,
-  isIronMaskVendor,
-  isMaskJsonVendor,
-  isVendorMaskValid,
-  stringify,
-  filterLargeProp,
-  filterLargeUrl,
-  parsePropsType
 }

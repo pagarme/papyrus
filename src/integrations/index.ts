@@ -1,19 +1,20 @@
-const {
-  __,
+import {
   filter,
   keys,
   pipe,
-  propEq
-} = require('ramda')
+  propEq,
+  __
+} from 'ramda'
+import { IntegrationHandlers, Integrations } from '../types'
 
 const getEnabledIntegrations = pipe(
   keys,
-  filter(propEq(__, true))
+  filter(propEq(__ as any, true) as any) // TODO: improve types removing 'any'
 )
 
-const integrationHandlers = {}
+const integrationHandlers: IntegrationHandlers = {}
 
-module.exports.loadIntegrations = (integrations = {}) => {
+export const loadIntegrations = (integrations: Integrations = {}) => {
   getEnabledIntegrations(integrations)
     .forEach((integration) => {
       try {
@@ -24,7 +25,7 @@ module.exports.loadIntegrations = (integrations = {}) => {
     })
 }
 
-module.exports.log = (log, integrations = {}) => {
+export const log = (log: any, integrations: Integrations = {}) => {
   const enabledIntegrations = getEnabledIntegrations(integrations)
 
   return enabledIntegrations.reduce((current, integration) => {
