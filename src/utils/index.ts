@@ -1,6 +1,7 @@
 import circularJSON from 'circular-json'
 import R from 'ramda'
 import { serializeError } from 'serialize-error'
+import { ParseFunction } from '../types'
 
 const pokeprop: <T>(arr: string[], obj: T) => Partial<T> = require('pokeprop')
 
@@ -70,7 +71,7 @@ export const filterLargeUrl = (url?: string, urlLengthLimit?: number) => {
   return url.length > urlLengthLimit ? truncateUrl() : url
 }
 
-export const parsePropsType = (reqProps: { [key: string]: any }, propsType: { [key: string]: (...args: any[]) => any }) => {
+export const parsePropsType = (reqProps: { [key: string]: any }, propsType: { [key: string]: ParseFunction }) => {
   const propsTypeKeys = R.keys(propsType) as string[]
 
   if (propsTypeKeys.length === 0) {

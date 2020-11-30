@@ -3,11 +3,12 @@ import { loadIntegrations } from './integrations'
 import { createLogger } from './logger'
 import { createMask } from './mask'
 import { createMessageBuilder } from './message-builder'
+import { EscribaConfig } from './types'
 import { isVendorLoggerValid, isVendorMaskValid } from './utils'
 
 const ironMask: any = require('iron-mask')
 
-export const escriba = (config: any) => {
+export const escriba = (config: EscribaConfig) => {
   const {
     service,
     loggerEngine,
@@ -37,3 +38,5 @@ export const escriba = (config: any) => {
 }
 
 export default escriba
+
+export { EscribaConfig, EscribaHttpConfig, HTTPMethods } from './types'

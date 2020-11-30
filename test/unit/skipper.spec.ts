@@ -1,7 +1,8 @@
 import { filter, forEach } from 'ramda'
 import { createSkipper } from '../../src/skipper'
+import { HTTPMethods } from '../../src/types'
 
-const methods = [
+const methods: HTTPMethods[] = [
   'GET',
   'HEAD',
   'POST',

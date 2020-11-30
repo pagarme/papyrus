@@ -1,11 +1,7 @@
+import { clone } from 'ramda'
 import { createMessageBuilder } from '../../src/message-builder'
 
-let messageBuilder: any = {}
-
-beforeEach(() => {
-  const mockedMessageMasker = (object: any): any => object
-  messageBuilder = createMessageBuilder(mockedMessageMasker, 'test')
-})
+const messageBuilder = createMessageBuilder(clone, 'test')
 
 test('messageBuilder: create message with a valid JSON object', () => {
   const { message, service, level } = messageBuilder({

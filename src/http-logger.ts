@@ -3,6 +3,7 @@ import R from 'ramda'
 import { createRequestLogger } from './request-logger'
 import { createResponseLogger } from './response-logger'
 import { createSkipper } from './skipper'
+import { EscribaHttpConfig, SkipperRule } from './types'
 
 const prepareConfigProps = ({
   envToLog,
@@ -11,10 +12,10 @@ const prepareConfigProps = ({
   logIdPath,
   propMaxLength,
   propsToParse
-}: any) => {
-  const defaultPropsToLog = R.defaultTo({}, propsToLog)
-  const defaultSkipRules = R.defaultTo([], skipRules)
-  const defaultEnvToLog = R.defaultTo([], envToLog)
+}: EscribaHttpConfig) => {
+  const defaultPropsToLog = R.defaultTo({ request: [] as string[], response: [] as string[] }, propsToLog)
+  const defaultSkipRules = R.defaultTo([] as SkipperRule[], skipRules)
+  const defaultEnvToLog = R.defaultTo([] as string[], envToLog)
   const defaultLogIdPath = R.defaultTo('', logIdPath)
 
   const propsToLogConfig = {
@@ -45,7 +46,7 @@ const middleware = (requestLogger: any, responseLogger: any, logIdPath: any, ski
   next()
 }
 
-export const createHttpLogger = (logger: any, messageBuilder: any, config: any) => {
+export const createHttpLogger = (logger: any, messageBuilder: any, config: EscribaHttpConfig) => {
   const {
     propsToLog,
     skipRules,
