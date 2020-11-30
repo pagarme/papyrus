@@ -3,6 +3,7 @@
   "version": "2.10.0",
   "description": "Logging with steroids",
   "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "scripts": {
     "prepare": "npm run build",
     "prebuild": "rimraf dist",
