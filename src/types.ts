@@ -14,7 +14,7 @@ export type SkipperRule = {
   onlyBody: boolean
 }
 
-export type ParseFunction = Function | FunctionConstructor
+export type ParseFunction = (arg: any) => any | FunctionConstructor
 
 export type PropMaxLengthType = Map<number>
 export type PropsToParseType = {
